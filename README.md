@@ -16,7 +16,7 @@ I’m a curious builder, always looking for meaningful ways to use AI to tackle 
 
 ## What I’m Working On
 - Building **self-hosted LLM tools** for academic and personal productivity  
-- Enhancing **MarketTracker**, my AI-based financial analytics platform  
+- Enhancing **ProfitLens**, my AI-based financial analytics platform  
 - Developing **Homora**, a real estate analytics and education platform  
 - Exploring research in **AI/ML**, **FinTech**, and **Healthcare AI**
 
