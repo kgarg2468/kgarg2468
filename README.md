@@ -1,7 +1,5 @@
 # 👋 Hi, I’m Krish Garg
 
-![Profile Banner](https://github.com/user-attachments/assets/ef357c5a-6b74-4374-83a4-cbf371c40c26)
-
 Hi, I’m Krish Garg, a sophomore at **Chapman University** majoring in **Computer Science** with a minor in **Data Analytics**. I was born in India and moved to the U.S. at a young age, where I discovered that technology could be a universal language — one that empowers, connects, and creates.
 
 My work sits at the intersection of **machine learning**, **healthcare**, and **finance**. From building AI-powered trading bots to personalized learning tools, I’m passionate about applying research to real-world problems.
