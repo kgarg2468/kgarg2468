@@ -10,13 +10,7 @@ I’m a curious builder, always looking for meaningful ways to use AI to tackle 
 
 ## Connect with Me
 - **Email**: kgarg@chapman.edu  
-- **LinkedIn**: [linkedin.com/in/krishgarg](www.linkedin.com/in/krishgarg-)  
-
-## What I’m Working On
-- Building **self-hosted LLM tools** for academic and personal productivity  
-- Enhancing **ProfitLens**, my AI-based financial analytics platform  
-- Developing **Homora**, a real estate analytics and education platform  
-- Exploring research in **AI/ML**, **FinTech**, and **Healthcare AI**
+- **LinkedIn**: [linkedin.com/in/krishgarg](www.linkedin.com/in/krishgarg-)
 
 ## Languages & Tools
 `Python` `Java` `C++` `JavaScript` `Docker` `Seaborn` `Langchain` `Numpy` `Pandas` `Scikit-learn` `Next.js` `Tailwind` `Linux` `Git`
