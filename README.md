@@ -1,20 +1,33 @@
-# 👋 Hi, I’m Krish Garg
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=kgarg2468&show_icons=true&theme=transparent&hide_title=true" height="165" />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=kgarg2468&layout=compact&theme=transparent" height="165" />
+</p>
 
-Hi, I’m Krish Garg, a sophomore at **Chapman University** majoring in **Computer Science** with a minor in **Data Analytics**. I was born in India and moved to the U.S. at a young age, where I discovered that technology could be a universal language — one that empowers, connects, and creates.
-
-My work sits at the intersection of **machine learning**, **healthcare**, and **finance**. From building AI-powered trading bots to personalized learning tools, I’m passionate about applying research to real-world problems.
-
-As **President of Chapman IEEE**, I focus on building a community where students from all backgrounds can learn, lead, and innovate together.
-
-I’m a curious builder, always looking for meaningful ways to use AI to tackle complex challenges — one line of code at a time.
-
-## Connect with Me
-- **Email**: kgarg@chapman.edu  
-- **LinkedIn**: [linkedin.com/in/krishgarg](www.linkedin.com/in/krishgarg-)
-
-## Languages & Tools
-`Python` `Java` `C++` `JavaScript` `Docker` `Seaborn` `Langchain` `Numpy` `Pandas` `Scikit-learn` `Next.js` `Tailwind` `Linux` `Git`
+<p align="center">
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vitejs/vitejs-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/fastapi/fastapi-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://cdn.simpleicons.org/langchain/1C3C3C" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/supabase/supabase-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" height="24" />
+</p>
 
 ---
 
-*Feel free to reach out for collaboration, research, or just to connect!*
+### Hackathons & Projects
+
+🥇 **[BlueDocs](https://github.com/shlawgathon/BlueDocs)** — 1st place @ Ocean Hacks
+> Interactive ocean planning platform with spatial risk analysis
+
+🏅 **[optX](https://github.com/kgarg2468/optX)** — Top 5 @ UCR AI Venture Pitch Competition
+> Strategy intelligence platform with Monte Carlo simulations and multi-agent AI debate
+
+🎯 **[Prism](https://github.com/kgarg2468/Cursor-For-PMs)** — Selected (500 of 1500+ applicants) @ Anthropic Claude Code Hackathon
+> AI-native product discovery system — the "Cursor for Product Managers"
