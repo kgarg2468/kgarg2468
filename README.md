@@ -1,6 +1,10 @@
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=kgarg2468&show_icons=true&theme=transparent&hide_title=true" height="165" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=kgarg2468&layout=compact&theme=transparent" height="165" />
+  <img src="https://github-readme-stats.vercel.app/api?username=kgarg2468&show_icons=true&theme=dark&bg_color=00000000&hide_border=true&hide_title=true" height="165" />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=kgarg2468&layout=compact&theme=dark&bg_color=00000000&hide_border=true" height="165" />
+</p>
+
+<p align="center">
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=kgarg2468&theme=dark&background=00000000&hide_border=true" />
 </p>
 
 <p align="center">
@@ -23,11 +27,11 @@
 
 ### Hackathons & Projects
 
-🥇 **[BlueDocs](https://github.com/shlawgathon/BlueDocs)** — 1st place @ Ocean Hacks
+**[BlueDocs](https://github.com/shlawgathon/BlueDocs)** — 1st place @ Ocean Hacks
 > Interactive ocean planning platform with spatial risk analysis
 
-🏅 **[optX](https://github.com/kgarg2468/optX)** — Top 5 @ UCR AI Venture Pitch Competition
+**[optX](https://github.com/kgarg2468/optX)** — Top 5 @ UCR AI Venture Pitch Competition
 > Strategy intelligence platform with Monte Carlo simulations and multi-agent AI debate
 
-🎯 **[Prism](https://github.com/kgarg2468/Cursor-For-PMs)** — Selected (500 of 1500+ applicants) @ Anthropic Claude Code Hackathon
+**[Prism](https://github.com/kgarg2468/Cursor-For-PMs)** — Selected (500 of 1500+ applicants worldwide) @ Anthropic Claude Code Hackathon
 > AI-native product discovery system — the "Cursor for Product Managers"
