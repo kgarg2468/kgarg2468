@@ -8,19 +8,19 @@
 </p>
 
 <p align="center">
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" height="24" /><br><sub>Python</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" height="24" /><br><sub>TypeScript</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" height="24" /><br><sub>JavaScript</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" height="24" /><br><sub>React</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original.svg" height="24" /><br><sub>Next.js</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vitejs/vitejs-original.svg" height="24" /><br><sub>Vite</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg" height="24" /><br><sub>Tailwind</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" height="24" /><br><sub>Node.js</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/fastapi/fastapi-original.svg" height="24" /><br><sub>FastAPI</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://cdn.simpleicons.org/langchain/1C3C3C" height="24" /><br><sub>LangChain</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/supabase/supabase-original.svg" height="24" /><br><sub>Supabase</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original.svg" height="24" /><br><sub>Docker</sub></a>&nbsp;&nbsp;&nbsp;
-  <a><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" height="24" /><br><sub>Git</sub></a>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vitejs/vitejs-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/fastapi/fastapi-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://cdn.simpleicons.org/langchain/1C3C3C" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/supabase/supabase-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original.svg" height="24" />&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" height="24" />
 </p>
 
 ---
@@ -28,10 +28,10 @@
 ### Hackathons & Projects
 
 **[BlueDocs](https://github.com/shlawgathon/BlueDocs)** — 1st place @ Ocean Hacks
-> An interactive ocean planning tool for proposing offshore projects and instantly analyzing spatial conflicts and risks using federal geospatial data
+> Interactive ocean planning tool for proposing offshore projects and instantly analyzing spatial conflicts and risks using federal geospatial data
 
 **[optX](https://github.com/kgarg2468/optX)** — Top 5 @ UCR AI Venture Pitch Competition
-> An AI-powered business strategy simulator that uses math as a guardrail—combining probabilistic modeling and structured decision graphs to keep AI-generated scenarios logically grounded.
+> AI-powered business strategy simulator that uses math as a guardrail—combining probabilistic modeling and structured decision graphs to keep AI-generated scenarios logically grounded.
 
 **[Prism](https://github.com/kgarg2468/Cursor-For-PMs)** — Selected (1/500 of 1500+ applicants worldwide) @ Anthropic Claude Code Hackathon
-> An AI-native product management workspace that simulates product decisions using structured data, agent workflows, and decision modeling to guide what to build next.
+> AI-native product management workspace that simulates product decisions using structured data, agent workflows, and decision modeling to guide what to build next.
