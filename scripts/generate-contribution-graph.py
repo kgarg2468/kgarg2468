@@ -217,33 +217,125 @@ def compute_streak_stats(days):
 
 
 def generate_streak_svg(total, current_streak, longest_streak):
-    """Generate a streak stats SVG card matching the dark theme."""
+    """Generate a crystal shard streak stats SVG card."""
     w, h = 490, 165
-    accent = "#58a6ff"
-    text_color = "#c9d1d9"
-    sub_color = "#8b949e"
-    bg = "#0d1117"
-    separator = "#21262d"
-
+    font = 'font-family="Segoe UI, Ubuntu, sans-serif"'
     date_range = f"{ACCOUNT_CREATED} - Present"
 
-    # Three columns, evenly spaced
+    # Diamond geometry
+    cy = 68  # diamond center y
+    half_h = 45  # diamond half-height
+    half_w = 38  # diamond half-width
     col_w = w / 3
     cols = [col_w * 0.5, col_w * 1.5, col_w * 2.5]
 
-    def column(cx, label, value, subtitle=""):
-        sub_el = f'<text x="{cx}" y="118" fill="{sub_color}" font-size="11" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">{subtitle}</text>' if subtitle else ""
-        return f"""<text x="{cx}" y="62" fill="{accent}" font-size="28" font-weight="700" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">{value}</text>
-    <text x="{cx}" y="88" fill="{text_color}" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">{label}</text>
-    {sub_el}"""
+    # Flame icon path (12x16, origin at top-center)
+    flame = (
+        "M0,8 C0,3.5 3,-1 6,-6 C9,-1 12,3.5 12,8 "
+        "C12,12 9.5,14 6,14 C2.5,14 0,12 0,8 Z"
+    )
+    # 4-point star/sparkle path (12x12, origin at center)
+    star = (
+        "M0,-6 C1,-2 2,-1 6,0 C2,1 1,2 0,6 "
+        "C-1,2 -2,1 -6,0 C-2,-1 -1,-2 0,-6 Z"
+    )
+
+    defs = """<defs>
+    <linearGradient id="diamond-fill" x1="0%" y1="0%" x2="100%" y2="100%" gradientTransform="rotate(135)">
+      <stop offset="0%" stop-color="#58a6ff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#58a6ff" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="diamond-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#58a6ff" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#58a6ff" stop-opacity="0.6"/>
+    </linearGradient>
+    <linearGradient id="diamond-stroke-amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#f97316" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="fire-grad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>"""
+
+    # Refraction lines (subtle diagonal lines across background)
+    refraction = (
+        f'<line x1="60" y1="0" x2="180" y2="{h}" stroke="#58a6ff" stroke-opacity="0.06" stroke-width="0.5"/>'
+        f'<line x1="200" y1="0" x2="320" y2="{h}" stroke="#58a6ff" stroke-opacity="0.05" stroke-width="0.5"/>'
+        f'<line x1="340" y1="0" x2="460" y2="{h}" stroke="#58a6ff" stroke-opacity="0.06" stroke-width="0.5"/>'
+        f'<line x1="430" y1="0" x2="550" y2="{h}" stroke="#58a6ff" stroke-opacity="0.04" stroke-width="0.5"/>'
+    )
+
+    def diamond(cx, stroke_grad="diamond-stroke"):
+        top = f"{cx},{cy - half_h}"
+        right = f"{cx + half_w},{cy}"
+        bottom = f"{cx},{cy + half_h}"
+        left = f"{cx - half_w},{cy}"
+        path = f"M{top} L{right} L{bottom} L{left} Z"
+        facet = f'<line x1="{cx - half_w + 6}" y1="{cy}" x2="{cx + half_w - 6}" y2="{cy}" stroke="#58a6ff" stroke-opacity="0.08" stroke-width="0.5"/>'
+        return (
+            f'<path d="{path}" fill="url(#diamond-fill)" stroke="url(#{stroke_grad})" stroke-width="1.5"/>'
+            f'{facet}'
+        )
+
+    def fire_icon(cx):
+        tx = cx - 6
+        ty = cy - half_h - 12
+        return f'<path d="{flame}" fill="url(#fire-grad)" transform="translate({tx},{ty})"/>'
+
+    def star_icon(cx):
+        return f'<path d="{star}" fill="#58a6ff" fill-opacity="0.8" transform="translate({cx},{cy - half_h - 2})"/>'
+
+    def stat_text(cx, value, suffix="", label="", subtitle=""):
+        parts = []
+        # Value text with glow
+        parts.append(
+            f'<text x="{cx}" y="{cy + 5}" fill="#58a6ff" font-size="26" font-weight="700" '
+            f'text-anchor="middle" {font} filter="url(#glow)">{value}</text>'
+        )
+        # Suffix (e.g. "days")
+        if suffix:
+            parts.append(
+                f'<text x="{cx}" y="{cy + 18}" fill="#8b949e" font-size="11" '
+                f'text-anchor="middle" {font}>{suffix}</text>'
+            )
+        # Label below diamond
+        if label:
+            parts.append(
+                f'<text x="{cx}" y="{cy + half_h + 16}" fill="#c9d1d9" font-size="11" '
+                f'font-weight="500" text-anchor="middle" {font}>{label}</text>'
+            )
+        # Subtitle
+        if subtitle:
+            parts.append(
+                f'<text x="{cx}" y="{cy + half_h + 30}" fill="#8b949e" font-size="9" '
+                f'text-anchor="middle" {font}>{subtitle}</text>'
+            )
+        return "\n    ".join(parts)
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">
-  <rect width="{w}" height="{h}" fill="{bg}" rx="6"/>
-  <line x1="{col_w}" y1="30" x2="{col_w}" y2="135" stroke="{separator}" stroke-width="1"/>
-  <line x1="{col_w * 2}" y1="30" x2="{col_w * 2}" y2="135" stroke="{separator}" stroke-width="1"/>
-  {column(cols[0], "Total Contributions", f"{total:,}", date_range)}
-  {column(cols[1], "Current Streak", f"{current_streak} days")}
-  {column(cols[2], "Longest Streak", f"{longest_streak} days")}
+  {defs}
+  <rect width="{w}" height="{h}" fill="#0d1117" rx="6"/>
+  {refraction}
+  {diamond(cols[0])}
+  {star_icon(cols[0])}
+  {stat_text(cols[0], f"{total:,}", label="Total Contributions", subtitle=date_range)}
+  {diamond(cols[1], "diamond-stroke-amber")}
+  {fire_icon(cols[1])}
+  {stat_text(cols[1], current_streak, suffix="days", label="Current Streak")}
+  {diamond(cols[2], "diamond-stroke-amber")}
+  {fire_icon(cols[2])}
+  {stat_text(cols[2], longest_streak, suffix="days", label="Longest Streak")}
 </svg>'''
     return svg
 
