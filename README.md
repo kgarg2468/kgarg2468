@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://github-readme-stats-7pyw.vercel.app/api/top-langs/?username=kgarg2468&layout=compact&theme=dark&bg_color=00000000&hide_border=true" height="165" />
+  <img src="https://github-readme-stats-jade-ten-92.vercel.app/api/top-langs/?username=kgarg2468&layout=compact&theme=dark&bg_color=00000000&hide_border=true" height="165" />
   <img src="https://github-readme-streak-stats.herokuapp.com/?user=kgarg2468&theme=dark&background=00000000&hide_border=true" height="165" />
 </p>
 
 <p align="center">
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=kgarg2468&bg_color=0d1117&color=58a6ff&line=58a6ff&point=ffffff&area=true&hide_border=true" />
+  <img src="assets/contribution-graph.svg" />
 </p>
 
 <p align="center">
