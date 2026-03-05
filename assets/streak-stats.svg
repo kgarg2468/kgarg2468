@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="490" height="165" viewBox="0 0 490 165">
+  <rect width="490" height="165" fill="#0d1117" rx="6"/>
+  <line x1="163.33333333333334" y1="30" x2="163.33333333333334" y2="135" stroke="#21262d" stroke-width="1"/>
+  <line x1="326.6666666666667" y1="30" x2="326.6666666666667" y2="135" stroke="#21262d" stroke-width="1"/>
+  <text x="81.66666666666667" y="62" fill="#58a6ff" font-size="28" font-weight="700" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">284</text>
+    <text x="81.66666666666667" y="88" fill="#c9d1d9" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">Total Contributions</text>
+    <text x="81.66666666666667" y="118" fill="#8b949e" font-size="11" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">2024-09-09 - Present</text>
+  <text x="245.0" y="62" fill="#58a6ff" font-size="28" font-weight="700" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">10 days</text>
+    <text x="245.0" y="88" fill="#c9d1d9" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">Current Streak</text>
+    
+  <text x="408.33333333333337" y="62" fill="#58a6ff" font-size="28" font-weight="700" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">10 days</text>
+    <text x="408.33333333333337" y="88" fill="#c9d1d9" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">Longest Streak</text>
+    
+</svg>

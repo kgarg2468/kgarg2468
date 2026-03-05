@@ -7,6 +7,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 
 USERNAME = "kgarg2468"
+ACCOUNT_CREATED = "2024-09-09"
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN", "")
 
 GRAPHQL_QUERY = """
@@ -140,21 +141,141 @@ def generate_svg(days):
     return svg
 
 
+def fetch_all_contributions():
+    """Fetch contributions from account creation to now, handling the 1-year API limit."""
+    now = datetime.now(timezone.utc)
+    start = datetime.strptime(ACCOUNT_CREATED, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+
+    # Build year-long (max) date ranges
+    ranges = []
+    cursor = start
+    while cursor < now:
+        end = min(cursor + timedelta(days=365), now)
+        ranges.append((cursor, end))
+        cursor = end + timedelta(seconds=1)
+
+    all_days = {}
+    for from_date, to_date in ranges:
+        variables = {
+            "username": USERNAME,
+            "from": from_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "to": to_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+        payload = json.dumps({"query": GRAPHQL_QUERY, "variables": variables}).encode()
+        req = urllib.request.Request(
+            "https://api.github.com/graphql",
+            data=payload,
+            headers={
+                "Authorization": f"bearer {GITHUB_TOKEN}",
+                "Content-Type": "application/json",
+                "User-Agent": "contribution-graph-generator",
+            },
+        )
+        with urllib.request.urlopen(req) as resp:
+            data = json.loads(resp.read().decode())
+        if "errors" in data:
+            raise RuntimeError(f"GraphQL errors: {data['errors']}")
+        for week in data["data"]["user"]["contributionsCollection"]["contributionCalendar"]["weeks"]:
+            for day in week["contributionDays"]:
+                all_days[day["date"]] = day["contributionCount"]
+
+    # Return sorted list of (date_str, count)
+    return sorted(all_days.items(), key=lambda d: d[0])
+
+
+def compute_streak_stats(days):
+    """Compute total contributions, current streak, and longest streak."""
+    total = sum(c for _, c in days)
+
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    # Current streak: consecutive days ending today (or yesterday)
+    current_streak = 0
+    for date_str, count in reversed(days):
+        if current_streak == 0 and count == 0:
+            # Allow today to have 0 (day not over yet), check from yesterday
+            if date_str == today:
+                continue
+            else:
+                break
+        if count > 0:
+            current_streak += 1
+        else:
+            break
+
+    # Longest streak
+    longest_streak = 0
+    run = 0
+    for _, count in days:
+        if count > 0:
+            run += 1
+            longest_streak = max(longest_streak, run)
+        else:
+            run = 0
+
+    return total, current_streak, longest_streak
+
+
+def generate_streak_svg(total, current_streak, longest_streak):
+    """Generate a streak stats SVG card matching the dark theme."""
+    w, h = 490, 165
+    accent = "#58a6ff"
+    text_color = "#c9d1d9"
+    sub_color = "#8b949e"
+    bg = "#0d1117"
+    separator = "#21262d"
+
+    date_range = f"{ACCOUNT_CREATED} - Present"
+
+    # Three columns, evenly spaced
+    col_w = w / 3
+    cols = [col_w * 0.5, col_w * 1.5, col_w * 2.5]
+
+    def column(cx, label, value, subtitle=""):
+        sub_el = f'<text x="{cx}" y="118" fill="{sub_color}" font-size="11" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">{subtitle}</text>' if subtitle else ""
+        return f"""<text x="{cx}" y="62" fill="{accent}" font-size="28" font-weight="700" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">{value}</text>
+    <text x="{cx}" y="88" fill="{text_color}" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Ubuntu, sans-serif">{label}</text>
+    {sub_el}"""
+
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">
+  <rect width="{w}" height="{h}" fill="{bg}" rx="6"/>
+  <line x1="{col_w}" y1="30" x2="{col_w}" y2="135" stroke="{separator}" stroke-width="1"/>
+  <line x1="{col_w * 2}" y1="30" x2="{col_w * 2}" y2="135" stroke="{separator}" stroke-width="1"/>
+  {column(cols[0], "Total Contributions", f"{total:,}", date_range)}
+  {column(cols[1], "Current Streak", f"{current_streak} days")}
+  {column(cols[2], "Longest Streak", f"{longest_streak} days")}
+</svg>'''
+    return svg
+
+
 def main():
-    print("Fetching contribution data...")
+    print("Fetching contribution data (last 30 days)...")
     days = fetch_contributions()
     print(f"Got {len(days)} days of data")
 
     svg = generate_svg(days)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_path = os.path.join(script_dir, "..", "assets", "contribution-graph.svg")
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    assets_dir = os.path.join(script_dir, "..", "assets")
+    os.makedirs(assets_dir, exist_ok=True)
 
-    with open(output_path, "w") as f:
+    graph_path = os.path.join(assets_dir, "contribution-graph.svg")
+    with open(graph_path, "w") as f:
         f.write(svg)
+    print(f"Written to {os.path.abspath(graph_path)}")
 
-    print(f"Written to {os.path.abspath(output_path)}")
+    print("Fetching all contributions for streak stats...")
+    all_days = fetch_all_contributions()
+    print(f"Got {len(all_days)} total days of data")
+
+    total, current_streak, longest_streak = compute_streak_stats(all_days)
+    print(f"Total: {total}, Current streak: {current_streak}, Longest: {longest_streak}")
+
+    streak_svg = generate_streak_svg(total, current_streak, longest_streak)
+    streak_path = os.path.join(assets_dir, "streak-stats.svg")
+    with open(streak_path, "w") as f:
+        f.write(streak_svg)
+    print(f"Written to {os.path.abspath(streak_path)}")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://github-readme-stats-jade-ten-92.vercel.app/api/top-langs/?username=kgarg2468&layout=compact&theme=dark&bg_color=00000000&hide_border=true" height="165" />
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=kgarg2468&theme=dark&background=00000000&hide_border=true" height="165" />
+  <img src="assets/streak-stats.svg" height="165" />
 </p>
 
 <p align="center">
