@@ -1,31 +1,13 @@
 #!/usr/bin/env python3
-"""Generate an SVG contribution graph using GitHub's GraphQL API."""
+"""Generate an SVG contribution graph by scraping GitHub's contribution page."""
 
-import json
 import os
+import re
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
 USERNAME = "kgarg2468"
 ACCOUNT_CREATED = "2024-09-09"
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN", "")
-
-GRAPHQL_QUERY = """
-query($username: String!, $from: DateTime!, $to: DateTime!) {
-  user(login: $username) {
-    contributionsCollection(from: $from, to: $to) {
-      contributionCalendar {
-        weeks {
-          contributionDays {
-            date
-            contributionCount
-          }
-        }
-      }
-    }
-  }
-}
-"""
 
 # Chart styling
 BG_COLOR = "#0d1117"
@@ -43,41 +25,81 @@ PADDING_TOP = 45
 PADDING_BOTTOM = 40
 
 
-def fetch_contributions():
-    now = datetime.now(timezone.utc)
-    to_date = now.replace(hour=23, minute=59, second=59)
-    from_date = (now - timedelta(days=30)).replace(hour=0, minute=0, second=0)
+def scrape_contributions(year):
+    """Scrape contribution data for a given year from GitHub's HTML endpoint.
 
-    variables = {
-        "username": USERNAME,
-        "from": from_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "to": to_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-    }
-
-    payload = json.dumps({"query": GRAPHQL_QUERY, "variables": variables}).encode()
-    req = urllib.request.Request(
-        "https://api.github.com/graphql",
-        data=payload,
-        headers={
-            "Authorization": f"bearer {GITHUB_TOKEN}",
-            "Content-Type": "application/json",
-            "User-Agent": "contribution-graph-generator",
-        },
-    )
-
+    Returns (day_counts, yearly_total) where day_counts is dict[str, int]
+    mapping date strings to contribution counts.
+    """
+    url = f"https://github.com/users/{USERNAME}/contributions?from={year}-01-01&to={year}-12-31"
+    req = urllib.request.Request(url, headers={"User-Agent": "contribution-graph-generator"})
     with urllib.request.urlopen(req) as resp:
-        data = json.loads(resp.read().decode())
+        html = resp.read().decode()
 
-    if "errors" in data:
-        raise RuntimeError(f"GraphQL errors: {data['errors']}")
+    # Extract yearly total from text like "276 contributions in 2026"
+    total_match = re.search(r'(\d+)\s+contributions?\s+in\s+\d{4}', html)
+    yearly_total = int(total_match.group(1)) if total_match else 0
 
-    days = []
-    for week in data["data"]["user"]["contributionsCollection"]["contributionCalendar"]["weeks"]:
-        for day in week["contributionDays"]:
-            days.append((day["date"], day["contributionCount"]))
+    # Extract per-day data: <td> with data-date, followed by <tool-tip> with count
+    day_counts = {}
+    # Match td elements with data-date and their associated tool-tip text
+    for match in re.finditer(
+        r'data-date="(\d{4}-\d{2}-\d{2})".*?<tool-tip[^>]*>(.*?)</tool-tip>',
+        html,
+        re.DOTALL,
+    ):
+        date_str = match.group(1)
+        tooltip = match.group(2).strip()
+        count_match = re.search(r'(\d+)\s+contributions?\s+on', tooltip)
+        if count_match:
+            day_counts[date_str] = int(count_match.group(1))
+        else:
+            day_counts[date_str] = 0
 
-    days.sort(key=lambda d: d[0])
+    return day_counts, yearly_total
+
+
+def fetch_contributions():
+    """Fetch contributions for the last 30 days by scraping GitHub."""
+    now = datetime.now(timezone.utc)
+    from_date = now - timedelta(days=30)
+    current_year = now.year
+
+    # Scrape current year (and previous year if the 30-day window crosses a year boundary)
+    years_needed = {current_year}
+    if from_date.year != current_year:
+        years_needed.add(from_date.year)
+
+    all_days = {}
+    for year in years_needed:
+        day_counts, _ = scrape_contributions(year)
+        all_days.update(day_counts)
+
+    # Filter to last 30 days
+    from_str = from_date.strftime("%Y-%m-%d")
+    to_str = now.strftime("%Y-%m-%d")
+    days = [
+        (date, count)
+        for date, count in sorted(all_days.items())
+        if from_str <= date <= to_str
+    ]
     return days
+
+
+def fetch_all_contributions():
+    """Fetch contributions from account creation to now by scraping GitHub."""
+    now = datetime.now(timezone.utc)
+    start_year = datetime.strptime(ACCOUNT_CREATED, "%Y-%m-%d").year
+    current_year = now.year
+
+    all_days = {}
+    total_contributions = 0
+    for year in range(start_year, current_year + 1):
+        day_counts, yearly_total = scrape_contributions(year)
+        all_days.update(day_counts)
+        total_contributions += yearly_total
+
+    return sorted(all_days.items(), key=lambda d: d[0]), total_contributions
 
 
 def generate_svg(days):
@@ -141,52 +163,8 @@ def generate_svg(days):
     return svg
 
 
-def fetch_all_contributions():
-    """Fetch contributions from account creation to now, handling the 1-year API limit."""
-    now = datetime.now(timezone.utc)
-    start = datetime.strptime(ACCOUNT_CREATED, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-
-    # Build year-long (max) date ranges
-    ranges = []
-    cursor = start
-    while cursor < now:
-        end = min(cursor + timedelta(days=365), now)
-        ranges.append((cursor, end))
-        cursor = end + timedelta(seconds=1)
-
-    all_days = {}
-    for from_date, to_date in ranges:
-        variables = {
-            "username": USERNAME,
-            "from": from_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "to": to_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        }
-        payload = json.dumps({"query": GRAPHQL_QUERY, "variables": variables}).encode()
-        req = urllib.request.Request(
-            "https://api.github.com/graphql",
-            data=payload,
-            headers={
-                "Authorization": f"bearer {GITHUB_TOKEN}",
-                "Content-Type": "application/json",
-                "User-Agent": "contribution-graph-generator",
-            },
-        )
-        with urllib.request.urlopen(req) as resp:
-            data = json.loads(resp.read().decode())
-        if "errors" in data:
-            raise RuntimeError(f"GraphQL errors: {data['errors']}")
-        for week in data["data"]["user"]["contributionsCollection"]["contributionCalendar"]["weeks"]:
-            for day in week["contributionDays"]:
-                all_days[day["date"]] = day["contributionCount"]
-
-    # Return sorted list of (date_str, count)
-    return sorted(all_days.items(), key=lambda d: d[0])
-
-
-def compute_streak_stats(days):
-    """Compute total contributions, current streak, and longest streak."""
-    total = sum(c for _, c in days)
-
+def compute_streak_stats(days, total):
+    """Compute current streak and longest streak. Total is provided from scraping."""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     # Current streak: consecutive days ending today (or yesterday)
@@ -220,8 +198,6 @@ def generate_streak_svg(total, current_streak, longest_streak):
     """Generate a crystal shard streak stats SVG card."""
     w, h = 490, 165
     font = 'font-family="Segoe UI, Ubuntu, sans-serif"'
-    date_range = f"{ACCOUNT_CREATED} - Present"
-
     # Diamond geometry
     cy = 68  # diamond center y
     half_h = 45  # diamond half-height
@@ -312,8 +288,8 @@ def generate_streak_svg(total, current_streak, longest_streak):
         # Label below diamond
         if label:
             parts.append(
-                f'<text x="{cx}" y="{cy + half_h + 16}" fill="#c9d1d9" font-size="11" '
-                f'font-weight="500" text-anchor="middle" {font}>{label}</text>'
+                f'<text x="{cx}" y="{cy + half_h + 16}" fill="#c9d1d9" font-size="13" '
+                f'font-weight="600" text-anchor="middle" {font}>{label}</text>'
             )
         # Subtitle
         if subtitle:
@@ -329,7 +305,7 @@ def generate_streak_svg(total, current_streak, longest_streak):
   {refraction}
   {diamond(cols[0])}
   {star_icon(cols[0])}
-  {stat_text(cols[0], f"{total:,}", label="Total Contributions", subtitle=date_range)}
+  {stat_text(cols[0], f"{total:,}", label="Total Contributions")}
   {diamond(cols[1], "diamond-stroke-amber")}
   {fire_icon(cols[1])}
   {stat_text(cols[1], current_streak, suffix="days", label="Current Streak")}
@@ -357,10 +333,10 @@ def main():
     print(f"Written to {os.path.abspath(graph_path)}")
 
     print("Fetching all contributions for streak stats...")
-    all_days = fetch_all_contributions()
+    all_days, total_contributions = fetch_all_contributions()
     print(f"Got {len(all_days)} total days of data")
 
-    total, current_streak, longest_streak = compute_streak_stats(all_days)
+    total, current_streak, longest_streak = compute_streak_stats(all_days, total_contributions)
     print(f"Total: {total}, Current streak: {current_streak}, Longest: {longest_streak}")
 
     streak_svg = generate_streak_svg(total, current_streak, longest_streak)
