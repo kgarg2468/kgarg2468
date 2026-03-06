@@ -29,4 +29,10 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/contribution-graph.svg assets/streak-stats.svg
           git diff --staged --quiet || git commit -m "Update contribution graph"
+          # Cache-bust: update README image URLs with a fresh timestamp
+          TIMESTAMP=$(date +%s)
+          sed -i -E "s|(raw\.githubusercontent\.com/kgarg2468/kgarg2468/main/assets/streak-stats\.svg)(\?t=[0-9]+)?|\1?t=${TIMESTAMP}|g" README.md
+          sed -i -E "s|(raw\.githubusercontent\.com/kgarg2468/kgarg2468/main/assets/contribution-graph\.svg)(\?t=[0-9]+)?|\1?t=${TIMESTAMP}|g" README.md
+          git add README.md
+          git diff --staged --quiet || git commit -m "Bust CDN cache for SVG assets"
           git push
