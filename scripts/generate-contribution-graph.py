@@ -99,7 +99,9 @@ def fetch_all_contributions():
         all_days.update(day_counts)
         total_contributions += yearly_total
 
-    return sorted(all_days.items(), key=lambda d: d[0]), total_contributions
+    today_str = now.strftime("%Y-%m-%d")
+    filtered = [(d, c) for d, c in sorted(all_days.items()) if d <= today_str]
+    return filtered, total_contributions
 
 
 def generate_svg(days):
