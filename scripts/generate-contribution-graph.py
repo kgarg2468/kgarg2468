@@ -5,9 +5,12 @@ import os
 import re
 import urllib.request
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 USERNAME = "kgarg2468"
 ACCOUNT_CREATED = "2024-09-09"
+STREAK_TIMEZONE = "America/Los_Angeles"
+STREAK_TRAILING_ZERO_GRACE_DAYS = 2
 
 # Chart styling
 BG_COLOR = "#0d1117"
@@ -165,34 +168,62 @@ def generate_svg(days):
     return svg
 
 
-def compute_streak_stats(days, total):
-    """Compute current streak and longest streak. Total is provided from scraping."""
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+def _local_today_str():
+    now_local = datetime.now(timezone.utc).astimezone(ZoneInfo(STREAK_TIMEZONE))
+    return now_local.strftime("%Y-%m-%d")
 
-    # Current streak: consecutive days ending today (or yesterday)
+
+def _compute_current_streak(filtered_days):
+    """Compute current streak with trailing-day grace before streak start."""
     current_streak = 0
-    for date_str, count in reversed(days):
-        if current_streak == 0 and count == 0:
-            # Allow today to have 0 (day not over yet), check from yesterday
-            if date_str == today:
+    skipped_trailing_zeros = 0
+    max_initial_zero_skips = 1 + STREAK_TRAILING_ZERO_GRACE_DAYS
+
+    for _, count in reversed(filtered_days):
+        if current_streak == 0:
+            if count == 0 and skipped_trailing_zeros < max_initial_zero_skips:
+                skipped_trailing_zeros += 1
                 continue
-            else:
+            if count == 0:
                 break
+            current_streak = 1
+            continue
+
         if count > 0:
             current_streak += 1
         else:
             break
 
-    # Longest streak
+    return current_streak
+
+
+def _compute_longest_streak(filtered_days):
+    """Compute longest streak without applying trailing-day grace."""
     longest_streak = 0
     run = 0
-    for _, count in days:
+    for _, count in filtered_days:
         if count > 0:
             run += 1
             longest_streak = max(longest_streak, run)
         else:
             run = 0
+    return longest_streak
 
+
+def compute_streak_stats(days, total, local_today=None):
+    """Compute current streak and longest streak.
+
+    local_today is optional and intended for deterministic tests.
+    """
+    effective_today = local_today or _local_today_str()
+    filtered_days = [
+        (date_str, count)
+        for date_str, count in sorted(days, key=lambda item: item[0])
+        if date_str <= effective_today
+    ]
+
+    current_streak = _compute_current_streak(filtered_days)
+    longest_streak = _compute_longest_streak(filtered_days)
     return total, current_streak, longest_streak
 
 
