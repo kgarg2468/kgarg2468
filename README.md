@@ -1,10 +1,10 @@
 <p align="center">
   <img src="https://github-readme-stats-jade-ten-92.vercel.app/api/top-langs/?username=kgarg2468&layout=compact&theme=dark&bg_color=00000000&hide_border=true" height="165" />
-  <img src="https://raw.githubusercontent.com/kgarg2468/kgarg2468/main/assets/streak-stats.svg?t=1773946790" height="165" />
+  <img src="https://raw.githubusercontent.com/kgarg2468/kgarg2468/main/assets/streak-stats.svg?t=1773972524" height="165" />
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/kgarg2468/kgarg2468/main/assets/contribution-graph.svg?t=1773946790" />
+  <img src="https://raw.githubusercontent.com/kgarg2468/kgarg2468/main/assets/contribution-graph.svg?t=1773972524" />
 </p>
 
 <p align="center">
