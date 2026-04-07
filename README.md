@@ -33,5 +33,5 @@
 **[optX](https://github.com/kgarg2468/optX)** — Top 5 @ UCR AI Venture Pitch Competition
 > AI-powered business strategy simulator that uses math as a guardrail—combining probabilistic modeling and structured decision graphs to keep AI-generated scenarios logically grounded.
 
-**[Prism](https://github.com/kgarg2468/Cursor-For-PMs)** — Selected (1/500 of 1500+ applicants worldwide) @ Anthropic Claude Code Hackathon
+**[Prism](https://github.com/kgarg2468/Cursor-For-PMs)** — Selected (1/500 of 13000+ applicants worldwide) @ Anthropic Claude Code Hackathon
 > AI-native product management workspace that simulates product decisions using structured data, agent workflows, and decision modeling to guide what to build next.
