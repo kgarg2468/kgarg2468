@@ -28,20 +28,29 @@ PADDING_TOP = 45
 PADDING_BOTTOM = 40
 
 
+def fetch_contributions_html(year):
+    """Fetch raw GitHub contributions HTML for a specific year."""
+    url = f"https://github.com/users/{USERNAME}/contributions?from={year}-01-01&to={year}-12-31"
+    req = urllib.request.Request(url, headers={"User-Agent": "contribution-graph-generator"})
+    with urllib.request.urlopen(req) as resp:
+        return resp.read().decode()
+
+
+def parse_yearly_total(html):
+    """Parse the yearly contribution total from the contributions heading."""
+    total_match = re.search(r'([\d,]+)\s+contributions?\s+in\s+\d{4}', html)
+    return int(total_match.group(1).replace(",", "")) if total_match else 0
+
+
 def scrape_contributions(year):
     """Scrape contribution data for a given year from GitHub's HTML endpoint.
 
     Returns (day_counts, yearly_total) where day_counts is dict[str, int]
     mapping date strings to contribution counts.
     """
-    url = f"https://github.com/users/{USERNAME}/contributions?from={year}-01-01&to={year}-12-31"
-    req = urllib.request.Request(url, headers={"User-Agent": "contribution-graph-generator"})
-    with urllib.request.urlopen(req) as resp:
-        html = resp.read().decode()
+    html = fetch_contributions_html(year)
 
-    # Extract yearly total from text like "276 contributions in 2026"
-    total_match = re.search(r'(\d+)\s+contributions?\s+in\s+\d{4}', html)
-    yearly_total = int(total_match.group(1)) if total_match else 0
+    yearly_total = parse_yearly_total(html)
 
     # Extract per-day data: <td> with data-date, followed by <tool-tip> with count
     day_counts = {}
