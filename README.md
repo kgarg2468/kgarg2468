@@ -23,15 +23,3 @@
   <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" height="45" />
 </p>
 
----
-
-### Hackathons & Projects
-
-**[BlueDocs](https://github.com/shlawgathon/BlueDocs)** — 1st place @ Ocean Hacks
-> Interactive ocean planning tool for proposing offshore projects and instantly analyzing spatial conflicts and risks using federal geospatial data
-
-**[optX](https://github.com/kgarg2468/optX)** — Top 5 @ UCR AI Venture Pitch Competition
-> AI-powered business strategy simulator that uses math as a guardrail—combining probabilistic modeling and structured decision graphs to keep AI-generated scenarios logically grounded.
-
-**[Prism](https://github.com/kgarg2468/Cursor-For-PMs)** — Selected (1/500 of 13000+ applicants worldwide) @ Anthropic Claude Code Hackathon
-> AI-native product management workspace that simulates product decisions using structured data, agent workflows, and decision modeling to guide what to build next.
