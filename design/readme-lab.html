@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>readme lab · kgarg2468</title>
+<style>
+:root{
+  --bg:#070707; --ink:#e9e9e9; --mid:#9b9b9b; --dim:#5a5a5a; --faint:#242424;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:13px/19px var(--mono);-webkit-font-smoothing:antialiased}
+body{display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}
+button{font:inherit}
+
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 16px;white-space:nowrap}
+.bar.top{border-bottom:1px dashed var(--faint)}
+.bar.bottom{border-top:1px dashed var(--faint);color:var(--dim)}
+.brand{font-weight:700}
+.brand span{color:var(--dim);font-weight:400}
+.path{color:var(--dim)} .path b{color:var(--ink);font-weight:400}
+.tabs{display:flex;gap:22px}
+.tab{all:unset;cursor:pointer;color:var(--dim)}
+.tab .k{color:var(--mid)}
+.tab[aria-pressed=true]{color:var(--ink)}
+.tab[aria-pressed=true]::before{content:"▸ "}
+.keys b{color:var(--mid);font-weight:400}
+
+.wrap{display:grid;grid-template-columns:300px 1fr;min-height:0}
+.controls{overflow:auto;padding:16px 16px 28px;border-right:1px dashed var(--faint)}
+.grp{margin:0 0 20px}
+.lbl{color:var(--mid);letter-spacing:.05em;display:flex;justify-content:space-between}
+.lbl .k{color:var(--dim);letter-spacing:0}
+.opts{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:5px}
+.opt{all:unset;cursor:pointer;color:var(--dim)}
+.opt::before{content:"( ) ";white-space:pre}
+.opt[aria-pressed=true]{color:var(--ink)}
+.opt[aria-pressed=true]::before{content:"(•) "}
+.opt.t::before{content:"[ ] "}
+.opt.t[aria-pressed=true]::before{content:"[x] "}
+.opt:focus-visible,.tab:focus-visible{outline:1px dashed var(--mid);outline-offset:2px}
+.note{color:var(--dim);margin-top:5px;font-size:12px;line-height:17px}
+.field{display:grid;grid-template-columns:92px 1fr;align-items:center;margin-top:6px}
+.field span{color:var(--dim)}
+.field input{all:unset;border-bottom:1px dashed var(--faint);color:var(--ink);padding:2px 0;width:100%;min-width:0}
+.field input:focus{border-bottom-color:var(--mid)}
+.facts{margin:6px 0 0;padding:0;font-size:12px;line-height:17px}
+.facts li{list-style:none;color:var(--mid);padding-left:14px;text-indent:-14px}
+.facts li::before{content:"✓ ";color:var(--ink)}
+.facts li.ph{color:var(--dim)}
+.facts li.ph::before{content:"? ";color:var(--dim)}
+
+.stage{overflow:auto;padding:22px 24px 40px}
+.fitbox{width:100%;min-width:0;overflow:hidden}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.cap{color:var(--mid);margin:0 0 8px;letter-spacing:.05em}
+.cap span{color:var(--dim);letter-spacing:0}
+
+.src{margin-top:22px;border:1px dashed var(--faint);padding:14px 16px;max-width:1200px}
+.src pre{margin:8px 0 14px;color:var(--ink);white-space:pre-wrap;word-break:break-all;font:12px/18px var(--mono)}
+.src ul{margin:8px 0 0;padding:0}
+.src li{list-style:none;color:var(--mid);padding-left:14px;text-indent:-14px;margin-bottom:3px}
+.src li::before{content:"· ";color:var(--dim)}
+.src code{color:var(--ink)}
+.src a{color:var(--ink)}
+
+/* GitHub profile mock */
+.gh{--bg:#0d1117;--fg:#f0f6fc;--muted:#9198a1;--border:#3d444d;--inset:#010409;--btn:#212830;
+  background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;overflow:hidden;
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif}
+.gh[data-theme=light]{--bg:#ffffff;--fg:#1f2328;--muted:#59636e;--border:#d1d9e0;--inset:#f6f8fa;--btn:#f6f8fa}
+.gh.full{width:1200px}
+.gh.solo{width:940px;padding:16px}
+.gh-nav{display:flex;align-items:center;gap:14px;padding:14px 24px 10px;background:var(--inset);font-weight:600}
+.gh-nav svg{fill:var(--fg)}
+.gh-tabs{display:flex;gap:6px;padding:0 24px 0 312px;background:var(--inset);border-bottom:1px solid var(--border)}
+.gh-tabs span{padding:8px 8px 10px;border-bottom:2px solid transparent}
+.gh-tabs span.on{border-bottom-color:#fd8c73;font-weight:600}
+.gh-tabs i{font-style:normal;background:rgba(101,108,118,.2);border-radius:2em;padding:0 6px;font-size:12px;margin-left:6px}
+.gh-main{display:grid;grid-template-columns:256px 1fr;gap:32px;padding:24px 24px 32px}
+.gh-avatar{width:256px;height:256px;border-radius:50%;border:1px solid var(--border);display:block}
+.gh-name{font-size:24px;line-height:1.25;font-weight:600;margin-top:16px}
+.gh-login{font-size:20px;font-weight:300;color:var(--muted);line-height:24px}
+.gh-btn{margin:16px 0 12px;width:100%;padding:5px 16px;border:1px solid var(--border);background:var(--btn);color:var(--fg);border-radius:6px;font-weight:500}
+.gh-meta{color:var(--muted)} .gh-meta b{color:var(--fg);font-weight:600}
+.gh-readme{border:1px solid var(--border);border-radius:6px;padding:24px;min-width:0}
+.gh-readme-h{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);margin-bottom:16px}
+.gh-readme-h b{font-weight:400;color:var(--fg)}
+.md p{margin:0 0 16px} .md p:last-child{margin-bottom:0}
+.md img{max-width:100%;vertical-align:middle}
+.md [align=center]{text-align:center}
+.md .pair{display:flex;justify-content:space-between}
+.md .pair img{width:49.3%}
+</style>
+</head>
+<body>
+
+<header class="bar top">
+  <div class="brand">readme lab <span>· kgarg2468</span></div>
+  <nav class="tabs" aria-label="view">
+    <button class="tab" data-k="mode" data-v="before"><span class="k">b</span> before</button>
+    <button class="tab" data-k="mode" data-v="after"><span class="k">a</span> after</button>
+    <button class="tab" data-k="mode" data-v="split"><span class="k">s</span> split</button>
+  </nav>
+  <div class="path">~/<b id="where">after</b></div>
+</header>
+
+<div class="wrap">
+  <aside class="controls">
+    <div class="grp">
+      <div class="lbl">LAYOUT <span class="k">l</span></div>
+      <div class="opts">
+        <button class="opt" data-k="layout" data-v="terminal">terminal</button>
+        <button class="opt" data-k="layout" data-v="cards">cards</button>
+        <button class="opt" data-k="layout" data-v="bare">bare</button>
+      </div>
+      <div class="note" id="layoutNote"></div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">BARS <span class="k">r</span></div>
+      <div class="opts">
+        <button class="opt" data-k="bar" data-v="dither">dither</button>
+        <button class="opt" data-k="bar" data-v="blocks">blocks</button>
+        <button class="opt" data-k="bar" data-v="chars">chars</button>
+      </div>
+      <div class="note" id="barNote"></div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">LOGOS <span class="k">o · p</span></div>
+      <div class="opts">
+        <button class="opt" data-k="tone" data-v="white">white</button>
+        <button class="opt" data-k="tone" data-v="grey">grey</button>
+        <button class="opt" data-k="tone" data-v="color">brand color</button>
+      </div>
+      <div class="opts">
+        <span style="color:var(--dim)">grid</span>
+        <button class="opt" data-k="grid" data-v="12">12</button>
+        <button class="opt" data-k="grid" data-v="16">16</button>
+        <button class="opt" data-k="grid" data-v="24">24</button>
+        <button class="opt" data-k="grid" data-v="off">off</button>
+      </div>
+      <div class="note">Brand colors too dark for the card (Next.js, Rust, NumPy, Django...) get lightened or switch to white.</div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">EXTRAS <span class="k">c · m</span></div>
+      <div class="opts" style="flex-direction:column">
+        <button class="opt t" data-k="scan">crt scanlines</button>
+        <button class="opt t" data-k="motion">motion (cursor, dither shimmer, chart reveal)</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">GITHUB THEME <span class="k">t</span></div>
+      <div class="opts">
+        <button class="opt" data-k="theme" data-v="dark">dark</button>
+        <button class="opt" data-k="theme" data-v="light">light</button>
+      </div>
+      <div class="note">Viewers in light mode see this. Check both.</div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">TEXT</div>
+      <label class="field"><span>name</span><input id="inName" maxlength="18" spellcheck="false"></label>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">TOKEN SPEND</div>
+      <div class="opts">
+        <button class="opt" data-k="count" data-v="all">with cache reads</button>
+        <button class="opt" data-k="count" data-v="fresh">without</button>
+      </div>
+      <label class="field"><span>total</span><input id="inTok" inputmode="numeric" spellcheck="false"></label>
+      <div class="note">Lifetime from your local logs. Cache reads are context the model re-reads on every turn, so they make up most of the total. Claude Code usage for Jul 21 to 31 is missing because those logs were deleted.</div>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">DATA IN THIS MOCK</div>
+      <ul class="facts">
+        <li>languages (your stats card today)</li>
+        <li>last 31 days of contributions</li>
+        <li>5,280 total · 2 day streak · 109 best</li>
+        <li>92 merged PRs in 7 public repos with 50+ stars</li>
+        <li>token spend from local Codex + Claude Code logs</li>
+        <li>name</li>
+        <li class="ph">stack: 28 picks, swap any you want</li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="stage" id="stage"></main>
+</div>
+
+<footer class="bar bottom">
+  <div class="keys"><b>b</b> before · <b>a</b> after · <b>s</b> split · <b>l</b> layout · <b>r</b> bars · <b>o</b> logo tone · <b>p</b> logo grid · <b>t</b> theme · <b>m</b> motion</div>
+  <div>kgarg2468 / readme lab</div>
+</footer>
+
+<script>
+const MONO = "ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace";
+
+const DATA = {
+  login: 'kgarg2468', name: 'Krish Garg', followers: 35, repos: 96, since: 'sep 2024',
+  avatar: 'https://avatars.githubusercontent.com/u/181051779?s=256&v=4',
+  total: 5280, streak: 2, best: 109,
+  daysFrom: 'aug 30',
+  days: [4,40,24,65,67,17,62,68,28,10,18,61,39,9,6,94,20,51,72,80,47,5,127,97,65,19,294,0,159,90,0],
+  langs: [['TypeScript',45.40],['Python',27.03],['Shell',9.49],['Rust',7.22],['Swift',6.03],['JavaScript',4.84]],
+  // merged PRs you authored, in public repos you don't own with 50+ stars: [repo, stars, prs]
+  oss: [
+    ['rocketride-org/rocketride-server', 17334, 81], ['run-llama/llama_index', 52344, 3], ['better-auth/better-auth', 30120, 3],
+    ['c15t/c15t', 1919, 2], ['modelcontextprotocol/servers', 90653, 1], ['InsForge/InsForge', 13025, 1], ['qdrant/landing_page', 60, 1],
+  ],
+  // Codex logs since 2025-12-26, Claude Code transcripts since 2026-08-01, Claude Code stats cache 2026-01-31..07-20
+  tokens: {all: 75846214525, fresh: 2501109232, since: 'dec 2025'},
+  // two centered rows of groups. si = Simple Icons slug, lh = LobeHub icon (brands Simple Icons dropped) with its brand hex.
+  stack: [
+    ['si:python si:typescript si:rust si:go si:cplusplus si:swift', 'si:pytorch mlx:mlx si:huggingface si:langchain si:modelcontextprotocol', 'si:nvidia si:vllm si:onnx'],
+    ['si:react si:nextdotjs si:tailwindcss', 'si:nodedotjs si:bun si:fastapi', 'si:postgresql si:redis si:supabase', 'lh:aws:FF9900 si:googlecloud si:cloudflare si:docker si:kubernetes'],
+  ].map(row => row.map(group => group.split(' ').map(t => { const [src, slug, hex] = t.split(':'); return {src, slug, hex}; }))),
+};
+
+const S = {
+  mode: 'after', layout: 'terminal', bar: 'dither', tone: 'color', grid: '24',
+  scan: false, motion: true, theme: 'dark', name: 'KRISH GARG',
+  count: 'all', custom: null,
+};
+const tokenValue = () => S.custom ?? DATA.tokens[S.count];
+
+const NOTES = {
+  layout: {
+    terminal: 'One framed SVG, like xiao.sh. Easiest to keep consistent. Nothing inside it is clickable.',
+    cards: 'One SVG per panel. Each can link somewhere, and you can reorder them in markdown.',
+    bare: 'No frame, transparent background. Needs a dark and a light copy of every SVG.',
+  },
+  bar: {
+    dither: 'Solid fill with a 3px checker edge, from your screenshot. Faint ticks every 10%.',
+    blocks: 'Segmented 6px cells. The last partial cell is checkered.',
+    chars: 'Text glyphs █ ▓ ▒ ░ · like a TUI. The chart uses # and *.',
+  },
+};
+
+/* ---------- 5x7 pixel font ---------- */
+const FONT = {
+  A:'.###.|#...#|#...#|#####|#...#|#...#|#...#', B:'####.|#...#|#...#|####.|#...#|#...#|####.',
+  C:'.###.|#...#|#....|#....|#....|#...#|.###.', D:'####.|#...#|#...#|#...#|#...#|#...#|####.',
+  E:'#####|#....|#....|####.|#....|#....|#####', F:'#####|#....|#....|####.|#....|#....|#....',
+  G:'.###.|#...#|#....|#.###|#...#|#...#|.####', H:'#...#|#...#|#...#|#####|#...#|#...#|#...#',
+  I:'###|.#.|.#.|.#.|.#.|.#.|###',             J:'..###|...#.|...#.|...#.|...#.|#..#.|.##..',
+  K:'#...#|#..#.|#.#..|##...|#.#..|#..#.|#...#', L:'#....|#....|#....|#....|#....|#....|#####',
+  M:'#...#|##.##|#.#.#|#.#.#|#...#|#...#|#...#', N:'#...#|#...#|##..#|#.#.#|#..##|#...#|#...#',
+  O:'.###.|#...#|#...#|#...#|#...#|#...#|.###.', P:'####.|#...#|#...#|####.|#....|#....|#....',
+  Q:'.###.|#...#|#...#|#...#|#.#.#|#..#.|.##.#', R:'####.|#...#|#...#|####.|#.#..|#..#.|#...#',
+  S:'.####|#....|#....|.###.|....#|....#|####.', T:'#####|..#..|..#..|..#..|..#..|..#..|..#..',
+  U:'#...#|#...#|#...#|#...#|#...#|#...#|.###.', V:'#...#|#...#|#...#|#...#|#...#|.#.#.|..#..',
+  W:'#...#|#...#|#...#|#.#.#|#.#.#|#.#.#|.#.#.', X:'#...#|#...#|.#.#.|..#..|.#.#.|#...#|#...#',
+  Y:'#...#|#...#|.#.#.|..#..|..#..|..#..|..#..', Z:'#####|....#|...#.|..#..|.#...|#....|#####',
+  0:'.###.|#...#|#..##|#.#.#|##..#|#...#|.###.', 1:'..#..|.##..|..#..|..#..|..#..|..#..|.###.',
+  2:'.###.|#...#|....#|...#.|..#..|.#...|#####', 3:'#####|...#.|..#..|...#.|....#|#...#|.###.',
+  4:'...#.|..##.|.#.#.|#..#.|#####|...#.|...#.', 5:'#####|#....|####.|....#|....#|#...#|.###.',
+  6:'..##.|.#...|#....|####.|#...#|#...#|.###.', 7:'#####|....#|...#.|..#..|.#...|.#...|.#...',
+  8:'.###.|#...#|#...#|.###.|#...#|#...#|.###.', 9:'.###.|#...#|#...#|.####|....#|...#.|.##..',
+  ',':'..|..|..|..|.#|.#|#.', '.':'.|.|.|.|.|.|#', ' ':'...|...|...|...|...|...|...',
+  '-':'....|....|....|####|....|....|....', '/':'....#|....#|...#.|..#..|.#...|#....|#....',
+  ':':'.|#|.|.|.|#|.', '!':'#|#|#|#|#|.|#', "'":'#|#|.|.|.|.|.', '_':'.....|.....|.....|.....|.....|.....|#####',
+  '+':'.....|..#..|..#..|#####|..#..|..#..|.....', '?':'.###.|#...#|....#|...#.|..#..|.....|..#..',
+  '&':'.##..|#..#.|.##..|.#...|#.#.#|#..#.|.##.#', '~':'.....|.....|.#...|#.#.#|...#.|.....|.....',
+};
+const GL = {}; for (const k in FONT) GL[k] = FONT[k].split('|');
+const glyph = ch => GL[ch] || GL[ch.toUpperCase()] || GL['?'];
+function pxWidth(str, s){ let w = 0; for (const ch of str) w += glyph(ch)[0].length + 1; return Math.max(0, w - 1) * s; }
+// rows of cells -> path data, merging horizontal runs of `ch` (used by the font and the pixel logos)
+const num = v => +v.toFixed(2);
+function runs(rows, x, y, s, ch = '#'){
+  let d = '';
+  rows.forEach((row, r) => {
+    for (let c = 0; c < row.length;){
+      if (row[c] !== ch){ c++; continue; }
+      let e = c; while (e < row.length && row[e] === ch) e++;
+      d += `M${num(x + c*s)} ${num(y + r*s)}h${num((e - c)*s)}v${num(s)}h${num(-(e - c)*s)}z`;
+      c = e;
+    }
+  });
+  return d;
+}
+function pxPath(str, x, y, s){
+  let d = '', cx = x;
+  for (const ch of str){ const g = glyph(ch); d += runs(g, cx, y, s); cx += (g[0].length + 1) * s; }
+  return d;
+}
+function pxText(str, x, y, s, fill, shadow){
+  const d = pxPath(str, x, y, s);
+  return (shadow ? `<path fill="${shadow}" transform="translate(${s} ${s})" d="${d}"/>` : '') + `<path fill="${fill}" d="${d}"/>`;
+}
+
+/* ---------- helpers ---------- */
+const esc = v => String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fmt = n => Math.round(n).toLocaleString('en-US');
+function T(x, y, str, o = {}){
+  const {size = 12, fill, anchor = 'start', weight = 400} = o;
+  return `<text x="${x}" y="${y}" font-family="${MONO}" font-size="${size}" fill="${fill}" text-anchor="${anchor}"${weight !== 400 ? ` font-weight="${weight}"` : ''}>${esc(str)}</text>`;
+}
+function head(x, label, extra, p){
+  return `<text x="${x}" y="24" font-family="${MONO}" font-size="12" letter-spacing=".6" fill="${p.mid}">${esc(label)}${extra ? `<tspan fill="${p.dim}" letter-spacing="0">  ·  ${esc(extra)}</tspan>` : ''}</text>`;
+}
+const BLINK = `<animate attributeName="opacity" values="1;0" keyTimes="0;.5" calcMode="discrete" dur="1.1s" repeatCount="indefinite"/>`;
+function short(n){
+  if (n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,'') + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,'') + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,'') + 'K';
+  return String(n);
+}
+function human(n){
+  if (n >= 1e9) return (n/1e9).toFixed(2) + ' billion';
+  if (n >= 1e6) return (n/1e6).toFixed(2) + ' million';
+  return fmt(n);
+}
+const stars = n => (n >= 1000 ? (n/1000).toFixed(1) + 'k' : String(n)) + '★';
+function nextMilestone(n){
+  for (let e = 0; e < 16; e++) for (const m of [1,2,5]){ const v = m * 10**e; if (v > n) return v; }
+  return n || 1;
+}
+let UID = 0;
+
+function palette(){
+  if (S.layout === 'bare' && S.theme === 'light')
+    return {bg:null, border:null, ink:'#111111', mid:'#4a4a4a', dim:'#8f8f8f', faint:'#d7d7d7', track:'#ececec', tick:'#3c3c3c', shadow:'#b8b8b8', inkHex:'111111', greyHex:'8a8a8a', bgHex:'ffffff', light:true};
+  const bare = S.layout === 'bare';
+  return {bg: bare ? null : '#0a0a0a', border: bare ? null : '#262626', ink:'#ededed', mid:'#a3a3a3', dim:'#5f5f5f', faint:'#2a2a2a',
+    track: bare ? '#1b1b1b' : '#151515', tick:'#cdcdcd', shadow:'#4d4d4d', inkHex:'ededed', greyHex:'7a7a7a', bgHex: bare ? '0d1117' : '0a0a0a', light:false};
+}
+
+// brand colors that disappear on the card background: grey/black marks become ink, the rest get mixed toward ink
+const rgb = h => { const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const lum = c => c.map(v => (v /= 255) <= .03928 ? v/12.92 : ((v + .055)/1.055)**2.4).reduce((a, v, i) => a + v*[.2126, .7152, .0722][i], 0);
+const contrast = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + .05)/(y + .05); };
+function readable(hex, p){
+  const bg = rgb(p.bgHex), ink = rgb(p.inkHex);
+  let c = rgb(hex);
+  if (contrast(c, bg) >= 3) return hex;
+  if (Math.max(...c) - Math.min(...c) < 40) return p.inkHex;
+  for (let i = 0; i < 12 && contrast(c, bg) < 3; i++) c = c.map((v, k) => Math.round(v + (ink[k] - v)*.15));
+  return c.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+function defs(ctx){
+  const {id, p} = ctx;
+  const cells = {d25:[[0,0]], d50:[[0,0],[1,1]], d75:[[0,0],[1,0],[0,1]]};
+  let o = '';
+  for (const c of [2,3]) for (const [k, cs] of Object.entries(cells)){
+    const anim = S.motion && k === 'd50' && c === 3
+      ? `<animateTransform attributeName="patternTransform" type="translate" values="0 0;${c} 0" dur="1.2s" calcMode="discrete" repeatCount="indefinite"/>` : '';
+    o += `<pattern id="${id}-${k}-${c}" width="${2*c}" height="${2*c}" patternUnits="userSpaceOnUse">${cs.map(([x,y]) => `<rect x="${x*c}" y="${y*c}" width="${c}" height="${c}" fill="${p.ink}"/>`).join('')}${anim}</pattern>`;
+  }
+  o += `<pattern id="${id}-sh" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="2" height="2" fill="${p.shadow}"/><rect x="2" y="2" width="2" height="2" fill="${p.shadow}"/></pattern>`;
+  o += `<pattern id="${id}-scan" width="4" height="3" patternUnits="userSpaceOnUse"><rect y="2" width="4" height="1" fill="#000" fill-opacity=".32"/></pattern>`;
+  return o;
+}
+
+/* ---------- bars ---------- */
+function bar(x, y, w, h, frac, ctx){
+  const {p, id} = ctx; frac = Math.max(0, Math.min(1, frac));
+  if (S.bar === 'dither'){
+    const c = 3; let o = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${p.track}"/>`;
+    for (let i = 1; i < 10; i++){ const tx = Math.round(x + w*i/10); o += `<rect x="${tx}" y="${y + h - 3}" width="1" height="3" fill="${p.faint}"/>`; }
+    const fw = Math.round(frac * w / c) * c;
+    if (fw <= 0) return o;
+    const solid = Math.max(0, fw - 2*c);
+    o += `<rect x="${x}" y="${y}" width="${solid}" height="${h}" fill="${p.ink}"/>`;
+    for (let i = 1; i < 10; i++){ const tx = Math.round(x + w*i/10); if (tx < x + solid - 1) o += `<rect x="${tx}" y="${y}" width="1" height="${h}" fill="${p.tick}"/>`; }
+    ['d75','d50','d25'].forEach((k, i) => {
+      const fx = x + solid + i*c; if (fx >= x + w) return;
+      o += `<rect x="${fx}" y="${y}" width="${Math.min(c, x + w - fx)}" height="${h}" fill="url(#${id}-${k}-3)"/>`;
+    });
+    return o;
+  }
+  if (S.bar === 'blocks'){
+    const cw = 6, g = 2, n = Math.floor((w + g) / (cw + g)), f = frac * n, full = Math.floor(f);
+    let o = '';
+    for (let i = 0; i < n; i++){
+      const cx = x + i*(cw + g);
+      o += `<rect x="${cx}" y="${y}" width="${cw}" height="${h}" fill="${i < full ? p.ink : p.track}"/>`;
+      if (i === full && f - full > 0.2) o += `<rect x="${cx}" y="${y}" width="${cw}" height="${h}" fill="url(#${id}-d50-3)"/>`;
+    }
+    return o;
+  }
+  const n = Math.max(4, Math.floor(w / 7.4)), f = frac * n, full = Math.floor(f), rem = f - full;
+  let a = '█'.repeat(full);
+  if (full < n && rem > 0.05) a += rem > .66 ? '▓' : rem > .33 ? '▒' : '░';
+  const b = '·'.repeat(Math.max(0, n - [...a].length));
+  return `<text x="${x}" y="${y + h - 1}" font-family="${MONO}" font-size="12" textLength="${w}" lengthAdjust="spacingAndGlyphs"><tspan fill="${p.ink}">${a}</tspan><tspan fill="${p.dim}">${b}</tspan></text>`;
+}
+
+function chart(x, y, w, h, data, ctx){
+  const {p, id} = ctx, n = data.length, colW = w / n, bw = Math.max(2, Math.floor(colW) - 3), max = Math.max(...data);
+  const c = S.bar === 'blocks' ? 6 : 3, rows = Math.floor(h / c);
+  let o = '', maxLabel = '';
+  data.forEach((v, i) => {
+    const bx = Math.round(x + i*colW);
+    if (S.bar === 'chars'){
+      const ch = 10, rowsA = Math.floor(h / ch), k = v > 0 ? Math.max(1, Math.round(v / max * rowsA)) : 0;
+      if (!k) o += T(bx + bw/2, y + h - 1, '.', {size:11, fill:p.dim, anchor:'middle'});
+      for (let r = 0; r < k; r++) o += T(bx + bw/2, y + h - r*ch - 1, r === k - 1 ? '*' : '#', {size:11, fill: r === k - 1 ? p.mid : p.ink, anchor:'middle'});
+      if (v === max) maxLabel = T(bx + bw/2, y + h - k*ch - 6, fmt(v), {size:10, fill:p.mid, anchor:'middle'});
+      return;
+    }
+    const k = v > 0 ? Math.max(1, Math.round(v / max * rows)) : 0;
+    if (!k){ o += `<rect x="${bx}" y="${y + h - 2}" width="${bw}" height="2" fill="${p.faint}"/>`; return; }
+    const top = y + h - k*c;
+    if (S.bar === 'dither'){
+      if (k > 1) o += `<rect x="${bx}" y="${top + c}" width="${bw}" height="${(k - 1)*c}" fill="${p.ink}"/>`;
+      o += `<rect x="${bx}" y="${top}" width="${bw}" height="${c}" fill="url(#${id}-${k > 1 ? 'd50' : 'd75'}-3)"/>`;
+    } else {
+      for (let r = 0; r < k; r++) o += `<rect x="${bx}" y="${y + h - (r + 1)*c + 1}" width="${bw}" height="${c - 1}" fill="${p.ink}"/>`;
+    }
+    if (v === max) maxLabel = T(bx + bw/2, top - 6, fmt(v), {size:10, fill:p.mid, anchor:'middle'});
+  });
+  const steps = 8, ys = [], hs = [];
+  for (let i = 0; i <= steps; i++){ const hh = Math.round(h * i / steps); ys.push(y + h - hh); hs.push(hh); }
+  const reveal = S.motion
+    ? `<animate attributeName="y" values="${ys.join(';')}" dur=".8s" calcMode="discrete" fill="freeze"/><animate attributeName="height" values="${hs.join(';')}" dur=".8s" calcMode="discrete" fill="freeze"/>` : '';
+  return `<clipPath id="${id}-rev"><rect x="${x - 2}" y="${y}" width="${w + 4}" height="${h}">${reveal}</rect></clipPath>`
+    + `<line x1="${x}" x2="${x + w - 3}" y1="${y + h + 4.5}" y2="${y + h + 4.5}" stroke="${p.faint}" stroke-dasharray="3 3"/>`
+    + `<g clip-path="url(#${id}-rev)">${o}</g>${maxLabel}`;
+}
+
+/* ---------- logos: fetched once, then embedded as vector paths or pixel squares ---------- */
+const CACHE = {};
+let rerenderTimer = 0;
+const later = () => { clearTimeout(rerenderTimer); rerenderTimer = setTimeout(render, 80); };
+const loadImg = src => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
+
+// '#' = solid cell, '+' = edge cell drawn at half opacity so thin strokes survive the downscale
+async function pixelRows(svgText, cols, rows = cols){
+  const svg = svgText.replace(/<svg([^>]*)>/, (m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} width="${cols*8}" height="${rows*8}">`);
+  const bu = URL.createObjectURL(new Blob([svg], {type:'image/svg+xml'}));
+  try {
+    const im = await loadImg(bu);
+    const c = document.createElement('canvas'); c.width = cols; c.height = rows;
+    const g = c.getContext('2d'); g.drawImage(im, 0, 0, cols, rows);
+    const d = g.getImageData(0, 0, cols, rows).data, out = [];
+    for (let y = 0; y < rows; y++){
+      let row = '';
+      for (let x = 0; x < cols; x++){ const a = d[(y*cols + x)*4 + 3]; row += a > 150 ? '#' : a > 55 ? '+' : '.'; }
+      out.push(row);
+    }
+    return out;
+  } finally { URL.revokeObjectURL(bu); }
+}
+const iconUrl = it => it.src === 'lh' ? `https://unpkg.com/@lobehub/icons-static-svg@latest/icons/${it.slug}.svg` : `https://cdn.simpleicons.org/${it.slug}`;
+async function loadIcon(it){
+  if (it.src === 'mlx') return loadMLX();
+  const text = await (await fetch(iconUrl(it))).text();
+  const root = new DOMParser().parseFromString(text, 'image/svg+xml').documentElement;
+  if (root.nodeName !== 'svg') throw new Error('bad svg ' + it.slug);
+  root.querySelectorAll('title').forEach(t => t.remove());
+  root.querySelectorAll('[fill]').forEach(el => el.removeAttribute('fill'));
+  const inner = [...root.childNodes].map(n => new XMLSerializer().serializeToString(n)).join('').replace(/\sxmlns="[^"]*"/g, '').replace(/\s+/g, ' ');
+  const brand = it.hex || (text.match(/<svg[^>]*\sfill="#([0-9a-fA-F]{6})"/) || [])[1] || '000000';
+  return {brand, viewBox: root.getAttribute('viewBox') || '0 0 24 24', rule: root.getAttribute('fill-rule'), layers: [{text, inner}]};
+}
+// MLX only publishes a wordmark: "ML" in the main color, "X" in grey. Drawn shorter than the square
+// logos so the letters weigh about the same as the AWS wordmark.
+const MLX = {url: 'https://raw.githubusercontent.com/ml-explore/mlx/main/docs/logo/mlx_logo.svg', viewBox: '13 0 414 140', aspect: 414/140, scale: .62};
+async function loadMLX(){
+  const doc = new DOMParser().parseFromString(await (await fetch(MLX.url)).text(), 'image/svg+xml');
+  const glyph = id => doc.querySelector(`[id="${id}"] path`).getAttribute('d');
+  const uses = [...doc.querySelectorAll('use')].map(u => ({id: (u.getAttribute('xlink:href') || u.getAttribute('href')).slice(1), x: u.getAttribute('x'), y: u.getAttribute('y')}));
+  const part = list => list.map(u => `<path transform="translate(${u.x} ${u.y})" d="${glyph(u.id)}"/>`).join('');
+  const layer = (inner, grey) => ({inner, grey, text: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${MLX.viewBox}">${inner}</svg>`});
+  return {brand: '000000', viewBox: MLX.viewBox, aspect: MLX.aspect, scale: MLX.scale,
+    layers: [layer(part(uses.filter(u => u.id !== 'glyph-0-3'))), layer(part(uses.filter(u => u.id === 'glyph-0-3')), true)]};
+}
+const iconW = (it, size) => it.src === 'mlx' ? Math.round(size*MLX.scale*MLX.aspect) : size;
+
+// data/stack.json for scripts/generate_readme.py. GitHub Actions has no browser to cut logos to the grid,
+// so they're cut here, 1 cell = 1px, with colors already adjusted for the dark card. Re-export after editing DATA.stack.
+async function bakeStack(size = 24){
+  const p = {bgHex: '0a0a0a', inkHex: 'ededed', greyHex: '7a7a7a'};
+  const out = {size, rows: []};
+  for (const row of DATA.stack){
+    const groups = [];
+    for (const grp of row){
+      const icons = [];
+      for (const it of grp){
+        const ic = await loadIcon(it), h = Math.round(size*(ic.scale || 1)), w = Math.round(h*(ic.aspect || 1)), hex = readable(ic.brand, p);
+        const layers = [];
+        for (const l of ic.layers) layers.push({color: l.grey ? p.greyHex : hex, rows: await pixelRows(l.text, w, h)});
+        icons.push({slug: it.slug, w, h, layers});
+      }
+      groups.push(icons);
+    }
+    out.rows.push(groups);
+  }
+  return out;
+}
+async function downloadStack(){
+  const json = JSON.stringify(await bakeStack(), null, 1);
+  const a = document.createElement('a'); a.download = 'stack.json';
+  a.href = URL.createObjectURL(new Blob([json + '\n'], {type: 'application/json'})); a.click();
+}
+function cached(key, make){
+  const hit = CACHE[key];
+  if (hit && hit !== 'pending' && hit !== 'failed') return hit;
+  if (!hit){ CACHE[key] = 'pending'; make().then(v => { CACHE[key] = v; later(); }).catch(() => { CACHE[key] = 'failed'; }); }
+  return null;
+}
+function icon(it, x, y, size, p){
+  const ic = cached(it.slug, () => loadIcon(it));
+  if (!ic) return '';
+  const hex = S.tone === 'white' ? p.inkHex : S.tone === 'grey' ? p.greyHex : readable(ic.brand, p);
+  const color = l => l.grey && S.tone === 'color' ? p.greyHex : hex;
+  const h = size*(ic.scale || 1), w = iconW(it, size), top = y + (size - h)/2;
+  if (S.grid === 'off')
+    return ic.layers.map(l => `<svg x="${x}" y="${top}" width="${w}" height="${h}" viewBox="${ic.viewBox}" fill="#${color(l)}"${ic.rule ? ` fill-rule="${ic.rule}"` : ''}>${l.inner}</svg>`).join('');
+  const rn = Math.round(+S.grid*h/size), cn = Math.round(rn*(ic.aspect || 1)), s = h/rn;
+  return ic.layers.map((l, i) => {
+    const rows = cached(`${it.slug}@${S.grid}#${i}`, () => pixelRows(l.text, cn, rn));
+    if (!rows) return '';
+    const solid = runs(rows, x, top, s, '#'), soft = runs(rows, x, top, s, '+');
+    return `<path fill="#${color(l)}" d="${solid}"/>` + (soft ? `<path fill="#${color(l)}" fill-opacity=".45" d="${soft}"/>` : '');
+  }).join('');
+}
+
+/* ---------- sections ---------- */
+const P = 24;
+
+function secHeader(w, ctx){
+  const {p, id} = ctx;
+  let o = `<text x="${P}" y="23" font-family="${MONO}" font-size="13" font-weight="700" fill="${p.ink}">${esc(DATA.login)}</text>`;
+  o += `<text x="${w - P}" y="23" font-family="${MONO}" font-size="13" text-anchor="end" fill="${p.dim}">~/<tspan fill="${p.ink}">readme</tspan></text>`;
+  o += `<line x1="0" x2="${w}" y1="36.5" y2="36.5" stroke="${p.faint}" stroke-dasharray="4 3"/>`;
+  const name = (S.name || ' ').toUpperCase();
+  let s = 6; while (s > 3 && pxWidth(name, s) + 4*s > w - 2*P) s--;
+  const ny = 60;
+  o += pxText(name, P, ny, s, p.ink, `url(#${id}-sh)`);
+  o += `<rect x="${P + pxWidth(name, s) + 2*s}" y="${ny}" width="${3*s}" height="${7*s}" fill="${p.ink}">${S.motion ? BLINK : ''}</rect>`;
+  return {h: ny + 7*s + 28, svg: o};
+}
+
+function secStack(w, ctx){
+  const {p} = ctx, SZ = 24, g = 10, sep = 30, count = DATA.stack.flat(2).length;
+  let o = head(P, 'STACK', `${count} tools`, p), y = 44;
+  DATA.stack.forEach(row => {
+    let x = Math.round((w - row.reduce((a, grp, i) => a + grp.reduce((b, it) => b + iconW(it, SZ), 0) + (grp.length - 1)*g + (i ? sep : 0), 0)) / 2);
+    row.forEach((grp, i) => {
+      if (i){ o += T(x + sep/2, y + SZ/2 + 4, '·', {size:13, fill:p.dim, anchor:'middle'}); x += sep; }
+      grp.forEach(it => { o += icon(it, x, y, SZ, p); x += iconW(it, SZ) + g; });
+      x -= g;
+    });
+    y += SZ + 16;
+  });
+  return {h: y + 8, svg: o};
+}
+
+function secActivity(w, ctx){
+  const {p} = ctx, d = DATA.days, sum = d.reduce((a, b) => a + b, 0);
+  const cw = 15 * d.length, top = 45, h = 114;
+  let o = head(P, 'CONTRIBUTIONS', `${fmt(sum)} in the last ${d.length} days`, p);
+  o += chart(P, top, cw, h, d, ctx);
+  o += T(P, top + h + 24, DATA.daysFrom, {size:11, fill:p.dim});
+  o += T(P + cw - 3, top + h + 24, 'today', {size:11, fill:p.dim, anchor:'end'});
+  const rx = P + cw + 42, rw = w - P - rx;
+  o += head(rx, 'TOTALS', '', p);
+  [[fmt(DATA.total), 'contributions'], [String(DATA.streak), 'day streak, current'], [String(DATA.best), 'day streak, best']].forEach(([n, l], i) => {
+    const y = top + i*33; o += pxText(n, rx, y, 3, p.ink); o += T(rx + 92, y + 16, l, {size:12, fill:p.mid});
+  });
+  const by = 150;
+  o += bar(rx, by, rw - 64, 15, DATA.streak / DATA.best, ctx);
+  o += T(w - P, by + 14, `${DATA.streak}/${DATA.best}`, {size:17, fill:p.ink, anchor:'end'});
+  return {h: 198, svg: o};
+}
+
+function secLangs(w, ctx){
+  const {p} = ctx; let o = head(P, 'LANGUAGES', 'by bytes', p);
+  DATA.langs.forEach(([n, v], i) => {
+    const y = 45 + i*24, bx = P + 96, bw = w - P - bx - 54;
+    o += T(P, y + 10, n.toLowerCase(), {size:12, fill:p.mid});
+    o += bar(bx, y, bw, 12, v/100, ctx);
+    o += T(w - P, y + 10, v.toFixed(1) + '%', {size:12, fill:p.ink, anchor:'end'});
+  });
+  return {h: 198, svg: o};
+}
+
+function secOSS(w, ctx){
+  const {p, id} = ctx, list = DATA.oss, total = String(list.reduce((a, r) => a + r[2], 0));
+  let o = head(P, 'OPEN SOURCE', 'merged prs', p);
+  o += pxText(total, P, 42, 4, p.ink, `url(#${id}-sh)`);
+  const lx = P + pxWidth(total, 4) + 18;
+  o += T(lx, 55, 'merged pull requests', {size:12, fill:p.mid});
+  o += T(lx, 70, `${list.length} public repos with 50+ stars`, {size:11, fill:p.dim});
+  list.forEach(([repo, st, n], i) => {
+    const y = 97 + i*15.5, [owner, name] = repo.split('/');
+    o += `<text x="${P}" y="${y}" font-family="${MONO}" font-size="11" fill="${p.dim}">${esc(owner)}/<tspan fill="${p.mid}">${esc(name)}</tspan></text>`;
+    o += T(w - P - 34, y, stars(st), {size:11, fill:p.dim, anchor:'end'});
+    o += T(w - P, y, String(n), {size:11, fill:p.ink, anchor:'end'});
+  });
+  return {h: 198, svg: o};
+}
+
+function secTokens(w, ctx){
+  const {p, id} = ctx, t = Math.max(0, Math.round(tokenValue() || 0)), str = fmt(t);
+  const now = new Date(), synced = now.toLocaleString('en-US', {month:'short'}).toLowerCase() + ' ' + now.getDate();
+  let o = head(P, 'ESTIMATED TOKEN SPEND', `since ${DATA.tokens.since} · synced ${synced}`, p);
+  let s = 5; while (s > 2 && pxWidth(str, s) > (w > 500 ? w*.62 : w - 2*P)) s--;
+  const ny = 42, nw = pxWidth(str, s);
+  o += pxText(str, P, ny, s, p.ink, `url(#${id}-sh)`);
+  if (w > 500) o += T(P + nw + 26, ny + 7*s/2 + 5, `≈ ${human(t)} tokens`, {size:13, fill:p.mid});
+  else o += T(P, ny + 7*s + 22, `≈ ${human(t)} tokens`, {size:12, fill:p.mid});
+  const ms = nextMilestone(t), by = Math.ceil((ny + 7*s + (w > 500 ? 18 : 36)) / 3) * 3;
+  o += bar(P, by, w - 2*P - 116, 15, t / ms, ctx);
+  o += T(w - P, by + 14, `${short(t)}/${short(ms)}`, {size:17, fill:p.ink, anchor:'end'});
+  return {h: by + 15 + 22, svg: o};
+}
+
+function secFooter(w, ctx){
+  const {p} = ctx; const now = new Date();
+  const stamp = `${now.toISOString().slice(0, 10)} ${String(Math.floor(now.getUTCHours()/6)*6).padStart(2, '0')}:00 utc`;
+  let o = `<rect x="${P}" y="14" width="6" height="6" fill="${p.ink}">${S.motion ? BLINK : ''}</rect>`;
+  o += T(P + 14, 21, 'regenerated every 6h by github actions', {size:11, fill:p.dim});
+  o += T(w - P, 21, `last sync ${stamp}`, {size:11, fill:p.dim, anchor:'end'});
+  return {h: 34, svg: o};
+}
+
+function twoCol(w, ctx, A, B){
+  const half = w/2, a = A(half, ctx), b = B(half, ctx), h = Math.max(a.h, b.h);
+  return {h, svg: `${a.svg}<line x1="${half + .5}" x2="${half + .5}" y1="0" y2="${h}" stroke="${ctx.p.faint}" stroke-dasharray="4 3"/><g transform="translate(${half} 0)">${b.svg}</g>`};
+}
+
+function wrapSvg(w, h, body, ctx){
+  const {p, id} = ctx, framed = !!p.bg;
+  const scan = S.scan && framed ? `<rect width="${w}" height="${h}" fill="url(#${id}-scan)">${S.motion ? '<animate attributeName="opacity" values="1;.75;1;.9;1" dur="4s" repeatCount="indefinite"/>' : ''}</rect>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${defs(ctx)}</defs>`
+    + (framed ? `<rect width="${w}" height="${h}" fill="${p.bg}"/>` : '') + body + scan
+    + (framed ? `<rect x=".5" y=".5" width="${w - 1}" height="${h - 1}" fill="none" stroke="${p.border}"/>` : '') + `</svg>`;
+}
+
+// Everything is shown through <img>, the same way GitHub shows README images, so
+// anything GitHub would block (outside files, fonts, scripts) is blocked here too.
+const dataUrl = svg => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+const img = (svg, alt) => `<img src="${dataUrl(svg)}" alt="${esc(alt)}">`;
+function single(w, sec, alt){
+  const ctx = {p: palette(), id: 'k' + (++UID)}, s = sec(w, ctx);
+  return img(wrapSvg(w, s.h, s.svg, ctx), alt);
+}
+
+let LAST_SVG = '';
+function afterHTML(){
+  const W = 850;
+  if (S.layout === 'terminal'){
+    const ctx = {p: palette(), id: 'k' + (++UID)};
+    const secs = [secHeader(W, ctx), secStack(W, ctx), secActivity(W, ctx), twoCol(W, ctx, secLangs, secOSS), secTokens(W, ctx), secFooter(W, ctx)];
+    let y = 0, body = '';
+    secs.forEach((s, i) => {
+      if (i) body += `<line x1="0" x2="${W}" y1="${y + .5}" y2="${y + .5}" stroke="${ctx.p.faint}" stroke-dasharray="4 3"/>`;
+      body += `<g transform="translate(0 ${y})">${s.svg}</g>`; y += s.h;
+    });
+    LAST_SVG = wrapSvg(W, y, body, ctx);
+    return `<p>${img(LAST_SVG, 'Krish Garg: stack, contributions, languages, open source, token spend')}</p>`;
+  }
+  return `<p>${single(W, secHeader, 'header')}</p><p>${single(W, secStack, 'stack')}</p><p>${single(W, secActivity, 'contributions')}</p>`
+    + `<p class="pair">${single(419, secLangs, 'languages')}${single(419, secOSS, 'open source')}</p><p>${single(W, secTokens, 'token spend')}</p>`;
+}
+
+function beforeHTML(){
+  const dev = ['python/python-original','typescript/typescript-original','javascript/javascript-original','react/react-original','nextjs/nextjs-original','vitejs/vitejs-original','tailwindcss/tailwindcss-original','nodejs/nodejs-original','fastapi/fastapi-original',null,'supabase/supabase-original','docker/docker-original','git/git-original'];
+  const icons = dev.map(s => `<img src="${s ? `https://raw.githubusercontent.com/devicons/devicon/master/icons/${s}.svg` : 'https://cdn.simpleicons.org/langchain/1C3C3C'}" height="45">`).join('&nbsp;&nbsp;\n');
+  return `<p align="center">
+    <img src="https://github-readme-stats-jade-ten-92.vercel.app/api/top-langs/?username=kgarg2468&layout=compact&theme=dark&bg_color=00000000&hide_border=true" height="165">
+    <img src="https://raw.githubusercontent.com/kgarg2468/kgarg2468/main/assets/streak-stats.svg" height="165">
+  </p>
+  <p align="center"><img src="https://raw.githubusercontent.com/kgarg2468/kgarg2468/main/assets/contribution-graph.svg"></p>
+  <p align="center">${icons}</p>`;
+}
+
+/* ---------- page ---------- */
+const OCTO = '<svg height="32" viewBox="0 0 16 16" width="32" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>';
+const readmeBox = inner => `<section class="gh-readme"><div class="gh-readme-h"><b>${DATA.login}</b> / README<b>.md</b></div><div class="md">${inner}</div></section>`;
+
+function fullPage(inner){
+  return `<div class="gh full" data-theme="${S.theme}">
+    <div class="gh-nav">${OCTO}<span>${DATA.login}</span></div>
+    <div class="gh-tabs"><span class="on">Overview</span><span>Repositories<i>${DATA.repos}</i></span><span>Projects</span><span>Packages</span><span>Stars</span></div>
+    <div class="gh-main">
+      <aside><img class="gh-avatar" src="${DATA.avatar}" alt=""><div class="gh-name">${DATA.name}</div><div class="gh-login">${DATA.login}</div>
+        <button class="gh-btn" tabindex="-1">Follow</button><div class="gh-meta"><b>${DATA.followers}</b> followers</div></aside>
+      ${readmeBox(inner)}
+    </div></div>`;
+}
+
+const RAW = 'https://raw.githubusercontent.com/kgarg2468/kgarg2468/main/assets';
+function sourcePanel(){
+  let md;
+  if (S.layout === 'terminal') md = `<p align="center">\n  <img src="${RAW}/readme.svg?t=1790656488" width="100%" alt="Krish Garg: stack, contributions, languages, open source, token spend" />\n</p>`;
+  else if (S.layout === 'cards') md = ['header','stack','activity'].map(n => `<p align="center"><img src="${RAW}/${n}.svg?t=1790656488" width="100%" /></p>`).join('\n')
+    + `\n<p align="center">\n  <img src="${RAW}/languages.svg?t=1790656488" width="49%" />\n  <img src="${RAW}/opensource.svg?t=1790656488" width="49%" />\n</p>\n<p align="center"><img src="${RAW}/tokens.svg?t=1790656488" width="100%" /></p>`;
+  else md = ['header','stack','activity','languages','opensource','tokens'].map(n => `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${RAW}/${n}-dark.svg?t=1790656488" />\n  <img src="${RAW}/${n}-light.svg?t=1790656488" width="100%" />\n</picture>`).join('\n');
+  const kb = Math.round(new Blob([LAST_SVG]).size / 1024);
+  return `<div class="src"><div class="lbl">README.MD FOR THIS OPTION</div><pre>${esc(md)}</pre>
+    ${S.layout === 'terminal' ? `<p style="margin:0 0 14px"><a download="readme.svg" href="${dataUrl(LAST_SVG)}">download readme.svg</a> <span style="color:var(--dim)">· ${kb} KB, no outside files, the exact file GitHub would show</span>
+      <br><a href="#" onclick="downloadStack(); return false">export stack.json</a> <span style="color:var(--dim)">· the logos for <code>data/stack.json</code>, re-export after changing the stack</span></p>` : ''}
+    <div class="lbl">HOW IT GETS BUILT</div><ul>
+      <li>This preview shows the SVG inside <code>&lt;img&gt;</code>, like GitHub does. Outside files, web fonts and scripts are blocked there, so what you see here is what GitHub shows.</li>
+      <li><code>scripts/generate_readme.py</code> draws the terminal card into <code>assets/readme.svg</code> every 6h in GitHub Actions. Contributions and streaks come from the scraper in <code>scripts/generate-contribution-graph.py</code>.</li>
+      <li>Languages and merged PRs come from the GitHub API in the same run. PRs count if you wrote them, they merged, and the repo is public, not yours, and has 50+ stars.</li>
+      <li>Logos come from Simple Icons, plus LobeHub for brands Simple Icons dropped and the MLX repo for its wordmark. Actions has no browser to cut them to the grid, so this page does it: edit <code>DATA.stack</code>, click export stack.json, and commit it as <code>data/stack.json</code>.</li>
+      <li><code>scripts/token_spend.py</code> runs on your Mac every 6h through launchd, and again when the Mac wakes. It adds the Codex logs, the Claude Code logs and Claude Code's stats cache into a local ledger that never goes down, then uploads just the total to <code>data/tokens.json</code> with your <code>gh</code> login.</li>
+      <li>A change to <code>data/tokens.json</code> also starts the Action, so the card redraws a few minutes after each upload. If the Mac is off for a while, the card keeps the last total and its synced date.</li>
+    </ul></div>`;
+}
+
+const $ = s => document.querySelector(s);
+function render(){
+  const st = $('#stage'), top = st.scrollTop;
+  if (S.mode === 'split'){
+    st.innerHTML = `<div class="split">
+      <div><div class="cap">BEFORE <span>· what's live now</span></div><div class="fitbox"><div class="gh solo" data-theme="${S.theme}">${readmeBox(beforeHTML())}</div></div></div>
+      <div><div class="cap">AFTER <span>· ${S.layout} · ${S.bar}</span></div><div class="fitbox"><div class="gh solo" data-theme="${S.theme}">${readmeBox(afterHTML())}</div></div></div></div>`;
+  } else {
+    const inner = S.mode === 'before' ? beforeHTML() : afterHTML();
+    st.innerHTML = `<div class="fitbox">${fullPage(inner)}</div>${S.mode === 'after' ? sourcePanel() : ''}`;
+  }
+  st.scrollTop = top;
+  fit(); sync();
+}
+function fit(){
+  document.querySelectorAll('.fitbox').forEach(fb => {
+    const gh = fb.firstElementChild; gh.style.zoom = 1;
+    gh.style.zoom = Math.min(1, fb.clientWidth / gh.offsetWidth);
+  });
+}
+function sync(){
+  document.querySelectorAll('[data-k]').forEach(b => {
+    const k = b.dataset.k, v = b.dataset.v;
+    b.setAttribute('aria-pressed', String(v === undefined ? !!S[k] : S[k] === v && !(k === 'count' && S.custom !== null)));
+  });
+  $('#where').textContent = S.mode;
+  $('#layoutNote').textContent = NOTES.layout[S.layout];
+  $('#barNote').textContent = NOTES.bar[S.bar];
+  if (document.activeElement !== $('#inTok')) $('#inTok').value = fmt(tokenValue());
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-k]'); if (!b) return;
+  const k = b.dataset.k, v = b.dataset.v;
+  S[k] = v === undefined ? !S[k] : v;
+  if (k === 'count') S.custom = null;
+  render();
+});
+const cycle = (k, list) => { S[k] = list[(list.indexOf(S[k]) + 1) % list.length]; };
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.metaKey || e.ctrlKey || e.altKey) return;
+  const map = {
+    b: () => S.mode = 'before', a: () => S.mode = 'after', s: () => S.mode = 'split',
+    l: () => cycle('layout', ['terminal','cards','bare']), r: () => cycle('bar', ['dither','blocks','chars']),
+    o: () => cycle('tone', ['white','grey','color']), t: () => cycle('theme', ['dark','light']),
+    p: () => cycle('grid', ['12','16','24','off']), c: () => S.scan = !S.scan, m: () => S.motion = !S.motion,
+  };
+  if (map[e.key]){ map[e.key](); render(); }
+});
+
+const bind = (sel, key, parse, show) => { const el = $(sel); el.value = show(S[key]); el.addEventListener('input', () => { S[key] = parse(el.value); render(); }); };
+bind('#inName', 'name', v => v, v => v);
+$('#inTok').addEventListener('input', e => { S.custom = Number(e.target.value.replace(/[^\d]/g, '')) || 0; render(); });
+addEventListener('resize', fit);
+render();
+</script>
+</body>
+</html>

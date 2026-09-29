@@ -1,0 +1,49 @@
+name: Update README card
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  # The Mac's token job commits data/tokens.json; redraw right away instead of waiting for the next cron
+  push:
+    branches: [main]
+    paths: [data/tokens.json]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: readme-card
+  cancel-in-progress: false
+
+jobs:
+  update-card:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate README card
+        env:
+          # Every stat on the card is public data, so the built-in token is enough and never expires
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/generate_readme.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/readme.svg
+          git diff --staged --quiet && exit 0
+          git commit -m "Update README card"
+          # Cache-bust: update the README image URL with a fresh timestamp
+          TIMESTAMP=$(date +%s)
+          sed -i -E "s|(raw\.githubusercontent\.com/kgarg2468/kgarg2468/main/assets/readme\.svg)(\?t=[0-9]+)?|\1?t=${TIMESTAMP}|g" README.md
+          git add README.md
+          git diff --staged --quiet || git commit -m "Bust CDN cache for SVG assets"
+          # A token upload from the Mac can land while this job runs
+          git pull --rebase
+          git push
