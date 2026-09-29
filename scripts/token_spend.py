@@ -5,6 +5,7 @@ Keeps a ledger in ~/Library/Application Support/token-spend/ledger.json that
 only ever grows, and publishes aggregate totals (no log content) to
 data/tokens.json. `--install` registers a launchd job that uploads every 6h;
 `--uninstall` removes it. `--write PATH` writes the JSON locally instead.
+The job runs a copy of this file, so rerun `--install` after editing it.
 """
 
 import argparse
