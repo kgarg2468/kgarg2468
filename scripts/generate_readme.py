@@ -371,10 +371,12 @@ def sec_activity(w, ctx, data):
     o.append(head(rx, "TOTALS", "", p))
     streak, best = data["streak"], data["best"]
     lines = [(fmt(data["total"]), "contributions"), (str(streak), "day streak, current"), (str(best), "day streak, best")]
+    # Labels share one column that moves right once a number outgrows "9,999"
+    lx = rx + max(92, max(px_width(n, 3) for n, _ in lines) + 14)
     for i, (n, label) in enumerate(lines):
         y = top + i * 33
         o.append(px_text(n, rx, y, 3, p.ink))
-        o.append(T(rx + 92, y + 16, label, size=12, fill=p.mid))
+        o.append(T(lx, y + 16, label, size=12, fill=p.mid))
     by = 150
     o.append(bar(rx, by, rw - 64, 15, streak / best if best else 0, ctx))
     o.append(T(w - P, by + 14, f"{streak}/{best}", size=17, fill=p.ink, anchor="end"))
@@ -402,7 +404,8 @@ def sec_oss(w, ctx, data):
     o.append(px_text(total, P, 42, 4, p.ink, f"url(#{uid}-sh)"))
     lx = P + px_width(total, 4) + 18
     o.append(T(lx, 55, "merged pull requests", size=12, fill=p.mid))
-    o.append(T(lx, 70, f"{len(lst)} public repos with 50+ stars", size=11, fill=p.dim))
+    shown = f", top {MAX_OSS_ROWS} below" if len(lst) > MAX_OSS_ROWS else ""
+    o.append(T(lx, 70, f"{len(lst)} public repos with 50+ stars{shown}", size=11, fill=p.dim))
     for i, (repo, st, n) in enumerate(lst[:MAX_OSS_ROWS]):
         y = 97 + i * 15.5
         owner, name = repo.split("/", 1)
@@ -568,7 +571,7 @@ query($login: String!, $after: String) {
       nodes {
         nameWithOwner
         isFork
-        languages(first: 20, orderBy: {field: SIZE, direction: DESC}) {
+        languages(first: 100, orderBy: {field: SIZE, direction: DESC}) {
           edges { size node { name } }
         }
       }

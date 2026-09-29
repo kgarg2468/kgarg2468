@@ -1,3 +1,4 @@
+import base64
 import importlib.util
 import io
 import json
@@ -7,6 +8,8 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
 
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "token_spend.py"
@@ -183,6 +186,37 @@ class TokenSpendTests(unittest.TestCase):
         expected = self.home / "Library" / "Application Support" / "token-spend" / "ledger.json"
         self.assertTrue(expected.exists())
         self.assertIn("total 0/0 since None", out.getvalue())
+
+
+class UploadTests(unittest.TestCase):
+    def run_upload(self, remote_total, local_total):
+        remote = {"total": remote_total, "fresh": 1, "since": "2025-12-26", "updated": "x"}
+        got = SimpleNamespace(returncode=0, stderr="", stdout=json.dumps({
+            "sha": "abc", "content": base64.b64encode(json.dumps(remote).encode()).decode()}))
+        put = SimpleNamespace(returncode=0, stderr="", stdout="{}")
+        calls = []
+
+        def fake_gh_api(gh, args, body=None):
+            calls.append(args)
+            return got if len(calls) == 1 else put
+
+        local = {"total": local_total, "fresh": 1, "since": "2025-12-26", "updated": "y"}
+        out = io.StringIO()
+        with mock.patch.object(MODULE, "find_gh", return_value="gh"), \
+                mock.patch.object(MODULE, "gh_api", side_effect=fake_gh_api), redirect_stdout(out):
+            MODULE.upload(local)
+        return calls, out.getvalue()
+
+    def test_skips_a_total_that_would_lower_the_published_one(self):
+        for local_total in (99, 100):
+            calls, out = self.run_upload(remote_total=100, local_total=local_total)
+            self.assertEqual(len(calls), 1, local_total)
+            self.assertIn("skipping upload", out)
+
+    def test_uploads_a_higher_total(self):
+        calls, out = self.run_upload(remote_total=100, local_total=101)
+        self.assertEqual(calls[1][:2], ["-X", "PUT"])
+        self.assertIn("uploaded data/tokens.json to main", out)
 
 
 if __name__ == "__main__":

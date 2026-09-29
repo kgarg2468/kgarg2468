@@ -273,8 +273,9 @@ def upload(output):
         current = json.loads(base64.b64decode(remote.get("content") or "").decode())
     except ValueError:
         current = {}
-    if current.get("total") == output["total"] and current.get("fresh") == output["fresh"]:
-        print("remote totals unchanged; skipping upload")
+    # A rebuilt ledger can count less than what is already published; never make the card go down
+    if output["total"] <= current.get("total", 0):
+        print(f"remote total {current.get('total')} is not below {output['total']}; skipping upload")
         return
     body = json.dumps({
         "message": "Update token spend",

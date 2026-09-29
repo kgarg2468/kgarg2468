@@ -58,9 +58,23 @@ class FixtureRenderTests(unittest.TestCase):
         data = MODULE.fixture_data()
         data["oss"] = data["oss"] + [["extra/one", 999, 1], ["extra/two", 999, 1]]
         svg = MODULE.render(data)
-        self.assertIn("9 public repos with 50+ stars", svg)
+        self.assertIn("9 public repos with 50+ stars, top 7 below", svg)
+        self.assertNotIn("top 7", self.svg)
         self.assertNotIn("extra/", svg)
         self.assertEqual(svg.count('<text x="24" y="190"'), 1)
+
+    def test_total_labels_clear_a_five_digit_number(self):
+        def label_x(data):
+            root = ET.fromstring(MODULE.render(data))
+            xs = [t.get("x") for t in root.iter(f"{{{SVG_NS}}}text") if t.text == "contributions"]
+            self.assertEqual(len(xs), 1)
+            return float(xs[0])
+
+        data = MODULE.fixture_data()
+        self.assertEqual(label_x(data), 623)
+        data["total"] = 12345
+        # 531 is the column start, 96 is the width of "12,345" at scale 3
+        self.assertEqual(label_x(data), 531 + 96 + 14)
 
 
 class PixelFontTests(unittest.TestCase):
