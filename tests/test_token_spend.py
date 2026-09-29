@@ -159,6 +159,50 @@ class TokenSpendTests(unittest.TestCase):
         ledger = json.loads(self.ledger.read_text())
         self.assertEqual(ledger["claude"]["2026-08-01"], {"all": 400, "fresh": 300})
 
+    def write_seed_fixture(self):
+        (self.home / ".claude").mkdir()
+        (self.home / ".claude" / "stats-cache.json").write_text(json.dumps({
+            "firstSessionDate": "2026-01-31T00:00:00.000Z",
+            "lastComputedDate": "2026-07-20",
+            "modelUsage": {"m1": {"inputTokens": 100, "cacheReadInputTokens": 1000}},
+        }))
+        write_jsonl(self.home / ".claude" / "projects" / "p" / "s.jsonl", [
+            claude_row("m_seed_day", "r1", "2026-09-29T09:00:00.000Z", 1, 1, 1, 1),
+            claude_row("m_after", "r2", "2026-09-30T09:00:00.000Z", 5, 5, 5, 5),
+        ])
+        sessions = self.home / ".codex" / "sessions"
+        write_jsonl(sessions / "2026" / "09" / "28" / "rollout-a.jsonl", [codex_row(30, 10, 30, 10)])
+        write_jsonl(sessions / "2026" / "10" / "01" / "rollout-b.jsonl", [codex_row(7, 2, 7, 2)])
+
+    def compute(self, published):
+        return MODULE.compute(str(self.home), str(self.ledger), published)
+
+    def test_rebuilt_ledger_starts_from_the_published_total(self):
+        self.write_seed_fixture()
+        published = {"total": 5000, "fresh": 900, "since": "2025-12-26", "updated": "2026-09-29T20:16:22Z"}
+
+        sources, totals, since = self.compute(published)
+
+        # Only usage after the published day adds on: claude 2026-09-30 and codex 2026-10-01
+        self.assertEqual(sources["published"], {"all": 5000, "fresh": 900})
+        self.assertNotIn("stats_cache", sources)
+        self.assertEqual(sources["claude"], {"all": 20, "fresh": 15})
+        self.assertEqual(sources["codex"], {"all": 7, "fresh": 5})
+        self.assertEqual(totals, {"all": 5027, "fresh": 920})
+        self.assertEqual(since, "2025-12-26")
+        # The seed is frozen; a later, larger published total does not replace it
+        again = self.compute({**published, "total": 10 ** 9})
+        self.assertEqual(again, (sources, totals, since))
+
+    def test_ledger_at_or_above_the_published_total_is_not_seeded(self):
+        self.write_seed_fixture()
+        published = {"total": 1000, "fresh": 1, "since": "2025-12-26", "updated": "2026-09-29T20:16:22Z"}
+
+        _, totals, _ = self.compute(published)
+
+        self.assertEqual(totals, {"all": 1100 + 4 + 20 + 30 + 7, "fresh": 100 + 3 + 15 + 20 + 5})
+        self.assertNotIn("published", json.loads(self.ledger.read_text()))
+
     def test_output_json_shape(self):
         write_jsonl(self.home / ".codex" / "sessions" / "2025" / "12" / "26" / "rollout-x.jsonl",
                     [codex_row(30, 10, 30, 10)])
@@ -202,9 +246,8 @@ class UploadTests(unittest.TestCase):
 
         local = {"total": local_total, "fresh": 1, "since": "2025-12-26", "updated": "y"}
         out = io.StringIO()
-        with mock.patch.object(MODULE, "find_gh", return_value="gh"), \
-                mock.patch.object(MODULE, "gh_api", side_effect=fake_gh_api), redirect_stdout(out):
-            MODULE.upload(local)
+        with mock.patch.object(MODULE, "gh_api", side_effect=fake_gh_api), redirect_stdout(out):
+            MODULE.upload("gh", MODULE.fetch_published("gh"), local)
         return calls, out.getvalue()
 
     def test_skips_a_total_that_would_lower_the_published_one(self):
@@ -217,6 +260,14 @@ class UploadTests(unittest.TestCase):
         calls, out = self.run_upload(remote_total=100, local_total=101)
         self.assertEqual(calls[1][:2], ["-X", "PUT"])
         self.assertIn("uploaded data/tokens.json to main", out)
+
+    def test_missing_remote_file_skips_upload(self):
+        missing = SimpleNamespace(returncode=1, stderr="gh: Not Found (HTTP 404)", stdout="")
+        out = io.StringIO()
+        with mock.patch.object(MODULE, "gh_api", return_value=missing) as gh_api, redirect_stdout(out):
+            MODULE.upload("gh", MODULE.fetch_published("gh"), {"total": 1})
+        self.assertEqual(gh_api.call_count, 1)
+        self.assertIn("is not on main yet", out.getvalue())
 
 
 if __name__ == "__main__":

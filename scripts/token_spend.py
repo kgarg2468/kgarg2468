@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 REPO = "kgarg2468/kgarg2468"
 BRANCH = "main"
 REMOTE_PATH = "data/tokens.json"
+ENDPOINT = f"repos/{REPO}/contents/{REMOTE_PATH}"
 LABEL = "com.kgarg2468.token-spend"
 GH_FALLBACKS = ["/opt/homebrew/bin/gh", "/usr/local/bin/gh"]
 SYSTEM_PYTHON = "/usr/bin/python3"
@@ -182,16 +183,26 @@ def save_ledger(ledger, path):
     os.replace(tmp, path)
 
 
+def seed_from(published):
+    """Frozen baseline from the published totals, or None if they are unusable."""
+    total, fresh, updated = published.get("total"), published.get("fresh"), published.get("updated")
+    if not (isinstance(total, int) and isinstance(fresh, int) and isinstance(updated, str) and len(updated) >= 10):
+        return None
+    return {"through": updated[:10], "since": published.get("since"), "all": total, "fresh": fresh}
+
+
 def summarize(ledger):
     """Return (per-source {all, fresh}, overall {all, fresh}, earliest day)."""
-    stats = ledger.get("stats_cache") or {}
-    through = stats.get("through") or ""
+    seed = ledger.get("published")
+    # A published seed already covers every source up to its day, the stats cache included
+    base = seed or ledger.get("stats_cache") or {}
+    through = base.get("through") or ""
     sources = {
-        "stats_cache": {"all": stats.get("all", 0), "fresh": stats.get("fresh", 0)},
+        "published" if seed else "stats_cache": {"all": base.get("all", 0), "fresh": base.get("fresh", 0)},
         "claude": {"all": 0, "fresh": 0},
         "codex": {"all": 0, "fresh": 0},
     }
-    days = [stats["since"]] if stats.get("since") else []
+    days = [base["since"]] if base.get("since") else []
     for day, counts in ledger.get("claude", {}).items():
         days.append(day)
         if day <= through:
@@ -201,6 +212,8 @@ def summarize(ledger):
     for counts in ledger.get("codex", {}).values():
         if counts.get("day"):
             days.append(counts["day"])
+        if seed and (counts.get("day") or "") <= through:
+            continue
         sources["codex"]["all"] += counts["all"]
         sources["codex"]["fresh"] += counts["fresh"]
     totals = {
@@ -210,11 +223,18 @@ def summarize(ledger):
     return sources, totals, min(days) if days else None
 
 
-def compute(home, ledger_path):
+def compute(home, ledger_path, published=None):
     ledger = load_ledger(ledger_path)
     update_ledger(ledger, scan_claude(home), scan_codex(home), scan_stats_cache(home))
+    result = summarize(ledger)
+    # Counting less than what is published means the ledger was lost and rebuilt from
+    # fewer logs. Start from the published total so uploads resume with the next day's usage.
+    seed = seed_from(published) if published and not ledger.get("published") else None
+    if seed and seed["all"] > result[1]["all"]:
+        ledger["published"] = seed
+        result = summarize(ledger)
     save_ledger(ledger, ledger_path)
-    return summarize(ledger)
+    return result
 
 
 def build_output(totals, since, now=None):
@@ -260,31 +280,37 @@ def gh_api(gh, args, body=None):
     return subprocess.run(cmd, input=body, capture_output=True, text=True)
 
 
-def upload(output):
-    gh = find_gh()
-    endpoint = f"repos/{REPO}/contents/{REMOTE_PATH}"
-    got = gh_api(gh, [f"{endpoint}?ref={BRANCH}"])
+def fetch_published(gh):
+    """(blob sha, parsed JSON) of the published file, or None if it is not on the branch yet."""
+    got = gh_api(gh, [f"{ENDPOINT}?ref={BRANCH}"])
     if got.returncode != 0:
         if "404" in got.stderr:
-            print(f"{REMOTE_PATH} is not on {BRANCH} yet; skipping upload")
-            return
+            return None
         raise SystemExit(f"gh api GET failed: {got.stderr.strip()}")
     remote = json.loads(got.stdout)
     try:
         current = json.loads(base64.b64decode(remote.get("content") or "").decode())
     except ValueError:
         current = {}
-    # A rebuilt ledger can count less than what is already published; never make the card go down
+    return remote["sha"], current
+
+
+def upload(gh, published, output):
+    if published is None:
+        print(f"{REMOTE_PATH} is not on {BRANCH} yet; skipping upload")
+        return
+    sha, current = published
+    # Never make the card go down
     if output["total"] <= current.get("total", 0):
         print(f"remote total {current.get('total')} is not below {output['total']}; skipping upload")
         return
     body = json.dumps({
         "message": "Update token spend",
         "content": base64.b64encode(render(output).encode()).decode(),
-        "sha": remote["sha"],
+        "sha": sha,
         "branch": BRANCH,
     })
-    put = gh_api(gh, ["-X", "PUT", endpoint], body=body)
+    put = gh_api(gh, ["-X", "PUT", ENDPOINT], body=body)
     if put.returncode != 0:
         raise SystemExit(f"gh api PUT failed: {put.stderr.strip()}")
     print(f"uploaded {REMOTE_PATH} to {BRANCH}")
@@ -349,13 +375,17 @@ def main(argv=None):
     if args.uninstall:
         return uninstall(home)
     ledger_path = args.ledger or os.path.join(support_dir(home), "ledger.json")
-    sources, totals, since = compute(home, ledger_path)
+    gh = published = None
+    if args.upload:
+        gh = find_gh()
+        published = fetch_published(gh)
+    sources, totals, since = compute(home, ledger_path, published and published[1])
     print(summary_line(sources, totals, since))
     output = build_output(totals, since)
     if args.write:
         write_output(output, args.write)
     if args.upload:
-        upload(output)
+        upload(gh, published, output)
 
 
 if __name__ == "__main__":
