@@ -7,7 +7,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-USERNAME = "kgarg2468"
+USERNAME = "krishhgg"
 ACCOUNT_CREATED = "2024-09-09"
 STREAK_TIMEZONE = "America/Los_Angeles"
 STREAK_TRAILING_ZERO_GRACE_DAYS = 2

@@ -29,7 +29,7 @@ TOKENS_PATH = ROOT / "data" / "tokens.json"
 OUT_PATH = ROOT / "assets" / "readme.svg"
 GRAPH_SCRIPT = ROOT / "scripts" / "generate-contribution-graph.py"
 
-LOGIN = "kgarg2468"
+LOGIN = "krishhgg"
 NAME = "KRISH GARG"
 WIDTH = 850
 P = 24
@@ -37,7 +37,7 @@ MIN_STARS = 50
 MAX_OSS_ROWS = 7
 LOCAL_TZ = "America/Los_Angeles"
 GRAPHQL_URL = "https://api.github.com/graphql"
-USER_AGENT = "kgarg2468-readme-generator"
+USER_AGENT = "krishhgg-readme-generator"
 MOTION = True
 SVG_ID = "k1"
 

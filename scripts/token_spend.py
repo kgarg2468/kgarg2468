@@ -20,11 +20,11 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 
-REPO = "kgarg2468/kgarg2468"
+REPO = "krishhgg/krishhgg"
 BRANCH = "main"
 REMOTE_PATH = "data/tokens.json"
 ENDPOINT = f"repos/{REPO}/contents/{REMOTE_PATH}"
-LABEL = "com.kgarg2468.token-spend"
+LABEL = "com.krishhgg.token-spend"
 GH_FALLBACKS = ["/opt/homebrew/bin/gh", "/usr/local/bin/gh"]
 SYSTEM_PYTHON = "/usr/bin/python3"
 LEDGER_VERSION = 1
