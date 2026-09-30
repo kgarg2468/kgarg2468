@@ -150,18 +150,18 @@ class PrAggregationTests(unittest.TestCase):
         nodes = (
             [pr_node("big/one", "big", 500)] * 2
             + [pr_node("small/star", "small", 49)] * 5
-            + [pr_node("kgarg2468/mine", "kgarg2468", 9000)] * 3
+            + [pr_node("krishhgg/mine", "krishhgg", 9000)] * 3
             + [pr_node("hidden/private", "hidden", 800, private=True)]
             + [pr_node("mid/two", "mid", 1000)] * 2
             + [pr_node("lone/fifty", "lone", 50)]
             + [{}]  # a search node that is not a pull request
         )
-        got = MODULE.aggregate_prs(nodes, login="kgarg2468", min_stars=50)
+        got = MODULE.aggregate_prs(nodes, login="krishhgg", min_stars=50)
         self.assertEqual(got, [["mid/two", 1000, 2], ["big/one", 500, 2], ["lone/fifty", 50, 1]])
         self.assertEqual(sum(r[2] for r in got), 5)
 
     def test_owner_match_is_case_insensitive(self):
-        got = MODULE.aggregate_prs([pr_node("KGarg2468/x", "KGarg2468", 100)])
+        got = MODULE.aggregate_prs([pr_node("Krishhgg/x", "Krishhgg", 100)])
         self.assertEqual(got, [])
 
 

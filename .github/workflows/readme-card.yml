@@ -41,7 +41,7 @@ jobs:
           git commit -m "Update README card"
           # Cache-bust: update the README image URL with a fresh timestamp
           TIMESTAMP=$(date +%s)
-          sed -i -E "s|(raw\.githubusercontent\.com/kgarg2468/kgarg2468/main/assets/readme\.svg)(\?t=[0-9]+)?|\1?t=${TIMESTAMP}|g" README.md
+          sed -i -E "s|(raw\.githubusercontent\.com/krishhgg/krishhgg/main/assets/readme\.svg)(\?t=[0-9]+)?|\1?t=${TIMESTAMP}|g" README.md
           git add README.md
           git diff --staged --quiet || git commit -m "Bust CDN cache for SVG assets"
           # A token upload from the Mac can land while this job runs
